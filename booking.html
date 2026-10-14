@@ -1,0 +1,598 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dormly | Book Accommodation</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            
+        }
+
+        body {
+            background: var(--bg);
+            color: var(--text);
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 40px auto;
+            padding: 0 20px;
+        }
+
+        .page-header {
+            background: var(--primary);
+            color: white;
+            padding: 30px;
+            border-radius:16px;
+            margin-bottom: 25px;
+        }
+
+        .page-header h1 {
+            font-size: 30px;
+            margin-bottom: 8px;
+        }
+
+        .page-header p {
+            font-size: 16px;
+            line-height: 1.6;
+            opacity: 0.9;
+        }
+
+        .card {
+            background: white;
+            padding: 30px;
+            border-radius:16px;
+            box-shadow: 0 0 15px rgba(0, 0, 0, 0.12);
+            margin-bottom: 25px;
+        }
+
+        .card h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        .property-summary {
+            border-left: 5px solid var(--primary);
+            padding-left: 20px;
+        }
+
+        .property-info {
+            line-height: 2;
+            font-size: 17px;
+            overflow-wrap: anywhere;
+        }
+
+        .property-rent {
+            color: var(--price);
+            font-size: 22px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: var(--text);
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 13px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            border-color: var(--primary);
+        }
+
+        .form-group textarea {
+            min-height: 120px;
+            resize: vertical;
+        }
+
+        .optional {
+            color: var(--muted);
+            font-weight: normal;
+            font-size: 14px;
+        }
+
+        .fee-box,
+        .payment-summary {
+            background: var(--bg);
+            border: 1px solid var(--border);
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+        }
+
+        .fee-box h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .fee-box p {
+            line-height: 1.6;
+            color: var(--muted);
+        }
+
+        .payment-summary {
+            margin-top: 25px;
+            margin-bottom: 0;
+        }
+
+        .payment-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 15px;
+            padding: 12px 0;
+        }
+
+        .payment-total {
+            font-size: 20px;
+        }
+
+        .payment-total strong {
+            color: var(--primary);
+            font-size: 24px;
+        }
+
+        .payment-button {
+            width: 100%;
+            padding: 16px;
+            margin-top: 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .payment-button:hover:not(:disabled) {
+            background: var(--primary-dark);
+        }
+
+        .payment-button:disabled {
+            background: var(--muted);
+            cursor: not-allowed;
+        }
+
+        #bookingMessage {
+            text-align: center;
+            margin-top: 15px;
+            font-weight: bold;
+            line-height: 1.6;
+            overflow-wrap: anywhere;
+        }
+
+        @media (max-width: 900px) {
+
+            .container {
+                margin: 25px auto;
+            }
+
+            .page-header h1 {
+                font-size: 25px;
+            }
+
+            .card {
+                padding: 22px;
+            }
+        }
+</style>
+</head>
+
+<body data-require="student">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+    <nav>
+        <div class="logo"><svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span></div>
+
+        <ul>
+            <li><a href="dashboard.html">Dashboard</a></li>
+            <li><a href="listings.html">Listings</a></li>
+            <li><a href="#" id="logoutLink">Logout</a></li>
+        </ul>
+    </nav>
+
+    <main class="container">
+
+        <div class="page-header">
+            <h1>Book Your Accommodation</h1>
+            <p>
+                Complete your booking details to continue to the
+                R70 booking-fee payment instructions.
+            </p>
+        </div>
+
+        <section class="card">
+            <div class="property-summary">
+                <h2>Selected Property</h2>
+
+                <div class="property-info">
+                    <strong>Property:</strong>
+                    <span id="propertyName">Loading...</span>
+                    <br>
+
+                    <strong>University:</strong>
+                    <span id="propertyUniversity">Loading...</span>
+                    <br>
+
+                    <strong>Address:</strong>
+                    <span id="propertyAddress">Loading...</span>
+
+                    <div class="property-rent">
+                        R<span id="propertyRent">0</span> / month
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <section class="card">
+            <h2>Booking Details</h2>
+
+            <form id="bookingForm">
+
+                <div class="form-group">
+                    <label for="moveInDate">Move-in Date</label>
+                    <input type="date" id="moveInDate" required>
+                </div>
+
+                <div class="form-group">
+                    <label for="studyPeriod">Study Period</label>
+                    <select id="studyPeriod" required>
+                        <option value="">Select study period</option>
+                        <option value="first_semester">First Semester</option>
+                        <option value="full_year">Full Academic Year</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="specialRequests">
+                        Special Requests
+                        <span class="optional">(Optional)</span>
+                    </label>
+
+                    <textarea
+                        id="specialRequests"
+                        placeholder="Add any special requests or information for the landlord..."
+                    ></textarea>
+                </div>
+
+                <div class="fee-box">
+                    <h3>Booking Fee</h3>
+                    <p>
+                        A once-off booking fee of <strong>R70</strong>
+                        is required to submit your accommodation application.
+                        This fee is separate from your monthly rent.
+                    </p>
+                </div>
+
+                <div class="payment-summary">
+                    <div class="payment-row payment-total">
+                        <span>Booking Fee</span>
+                        <strong>R70</strong>
+                    </div>
+                </div>
+
+                <button
+                    type="submit"
+                    id="paymentButton"
+                    class="payment-button"
+                    disabled
+                >
+                    Loading Booking Details...
+                </button>
+
+                <div id="bookingMessage" role="status" aria-live="polite"></div>
+
+            </form>
+        </section>
+
+    </main>
+
+    <footer>
+        <h2>Dormly</h2>
+        <br>
+        <p>Safe • Affordable • Verified Student Accommodation</p>
+        <br>
+        <p>© 2026 Dormly. All Rights Reserved.</p>
+    <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+    <script type="module">
+        import { auth, db } from "./js/firebase.js";
+
+        import {
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+        import {
+            doc,
+            getDoc
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+        // ==========================================
+        // ELEMENTS
+        // ==========================================
+
+        const propertyNameElement =
+            document.getElementById("propertyName");
+
+        const propertyUniversityElement =
+            document.getElementById("propertyUniversity");
+
+        const propertyAddressElement =
+            document.getElementById("propertyAddress");
+
+        const propertyRentElement =
+            document.getElementById("propertyRent");
+
+        const bookingForm =
+            document.getElementById("bookingForm");
+
+        const bookingMessage =
+            document.getElementById("bookingMessage");
+
+        const paymentButton =
+            document.getElementById("paymentButton");
+
+        const moveInDateInput =
+            document.getElementById("moveInDate");
+
+        // ==========================================
+        // STATE
+        // ==========================================
+
+        const params = new URLSearchParams(window.location.search);
+
+        const propertyId =
+            params.get("id") || params.get("propertyId");
+
+        let loggedInUser = null;
+        let propertyLoaded = false;
+        let submitting = false;
+
+        // Prevent selecting a move-in date in the past.
+        const now = new Date();
+        const localToday = [
+            now.getFullYear(),
+            String(now.getMonth() + 1).padStart(2, "0"),
+            String(now.getDate()).padStart(2, "0")
+        ].join("-");
+
+        moveInDateInput.min = localToday;
+
+        // ==========================================
+        // MESSAGE
+        // ==========================================
+
+        function showMessage(message, color = "#c62828") {
+            bookingMessage.textContent = message;
+            bookingMessage.style.color = color;
+        }
+
+        // ==========================================
+        // LOAD SELECTED PROPERTY
+        // ==========================================
+
+        async function loadProperty() {
+            propertyLoaded = false;
+            paymentButton.disabled = true;
+            paymentButton.textContent = "Loading Booking Details...";
+
+            if (!propertyId) {
+                propertyNameElement.textContent = "No property selected";
+                propertyUniversityElement.textContent = "-";
+                propertyAddressElement.textContent = "-";
+                propertyRentElement.textContent = "0";
+
+                showMessage(
+                    "No property was selected. Return to Listings and choose a property."
+                );
+
+                paymentButton.textContent = "Property Not Selected";
+                return;
+            }
+
+            try {
+                const propertyRef = doc(db, "properties", propertyId);
+                const propertySnapshot = await getDoc(propertyRef);
+
+                if (!propertySnapshot.exists()) {
+                    propertyNameElement.textContent = "Property not found";
+                    propertyUniversityElement.textContent = "-";
+                    propertyAddressElement.textContent = "-";
+                    propertyRentElement.textContent = "0";
+
+                    showMessage(
+                        "This property could not be found. Please return to Listings and select another property."
+                    );
+
+                    paymentButton.textContent = "Property Not Found";
+                    return;
+                }
+
+                const property = propertySnapshot.data();
+
+                propertyNameElement.textContent =
+                    property.name || property.title || "Unnamed Property";
+
+                propertyUniversityElement.textContent =
+                    property.university || "Not specified";
+
+                propertyAddressElement.textContent =
+                    property.address || property.location || "Not specified";
+
+                const rent =
+                    property.price ?? property.rent ?? 0;
+
+                propertyRentElement.textContent = String(rent);
+
+                localStorage.setItem("dormlyPropertyId", propertyId);
+
+                propertyLoaded = true;
+                paymentButton.disabled = false;
+                paymentButton.textContent = "Proceed to Payment — R70";
+
+                showMessage("", "#2e7d32");
+
+            } catch (error) {
+                console.error("Error loading property:", error);
+
+                showMessage(
+                    "Unable to load property details. Please refresh the page and try again."
+                );
+
+                paymentButton.disabled = true;
+                paymentButton.textContent = "Unable to Load Property";
+            }
+        }
+
+        // ==========================================
+        // CHECK AUTHENTICATION
+        // ==========================================
+
+        onAuthStateChanged(auth, async (user) => {
+            if (!user) {
+                window.location.href = "login.html";
+                return;
+            }
+
+            loggedInUser = user;
+            await loadProperty();
+        });
+
+        // ==========================================
+        // PROCEED TO PAYMENT
+        // ==========================================
+
+        bookingForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (submitting) return;
+
+            showMessage("");
+
+            if (!loggedInUser) {
+                showMessage("Please log in before booking.");
+                return;
+            }
+
+            if (!propertyId || !propertyLoaded) {
+                showMessage(
+                    "The selected property is not ready. Please wait or refresh the page."
+                );
+                return;
+            }
+
+            const moveInDate = moveInDateInput.value;
+
+            const studyPeriod =
+                document.getElementById("studyPeriod").value;
+
+            const specialRequests =
+                document.getElementById("specialRequests").value.trim();
+
+            if (!moveInDate || !studyPeriod) {
+                showMessage(
+                    "Please select your move-in date and study period."
+                );
+                return;
+            }
+
+            if (moveInDate < localToday) {
+                showMessage("Your move-in date cannot be in the past.");
+                return;
+            }
+
+            submitting = true;
+            paymentButton.disabled = true;
+            paymentButton.textContent = "Preparing Payment...";
+
+            try {
+                // Save the selected property and booking details.
+                localStorage.setItem("dormlyPropertyId", propertyId);
+                localStorage.setItem("dormlyMoveInDate", moveInDate);
+                localStorage.setItem("dormlyStayPeriod", studyPeriod);
+                localStorage.setItem(
+                    "dormlySpecialRequests",
+                    specialRequests
+                );
+
+                // Pass the selected property's Firestore document ID.
+                const paymentURL =
+                    "payment.html?id=" + encodeURIComponent(propertyId);
+
+                window.location.assign(paymentURL);
+
+            } catch (error) {
+                console.error("Unable to continue to payment:", error);
+
+                showMessage(
+                    "Something went wrong. Please try again."
+                );
+
+                submitting = false;
+                paymentButton.disabled = false;
+                paymentButton.textContent = "Proceed to Payment — R70";
+            }
+        });
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        document.getElementById("logoutLink").addEventListener(
+            "click",
+            async (event) => {
+                event.preventDefault();
+
+                try {
+                    await signOut(auth);
+                    window.location.href = "login.html";
+                } catch (error) {
+                    console.error("Logout error:", error);
+                    showMessage("Unable to log out. Please try again.");
+                }
+            }
+        );
+    </script>
+
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

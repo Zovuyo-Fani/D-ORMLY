@@ -1,0 +1,878 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+<script type="module" src="js/script.js"></script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dormly | My Profile</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+
+.header{
+    background:var(--primary);
+    color:white;
+    text-align:center;
+    padding:40px;
+}
+
+.header h1{
+    font-size:40px;
+    margin-bottom:10px;
+}
+
+
+
+.container{
+    display:flex;
+    justify-content:center;
+    padding:30px;
+}
+
+.profile-box{
+    background:white;
+    width:750px;
+    padding:30px;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(15,42,92,.08);
+}
+
+
+
+.profile-pic{
+    text-align:center;
+    margin-bottom:20px;
+}
+
+.profile-pic img{
+    width:120px;
+    height:120px;
+    border-radius:50%;
+    background:var(--border);
+    object-fit:cover;
+}
+
+
+
+#loading{
+    text-align:center;
+    color:var(--primary);
+    font-weight:bold;
+    margin:20px 0;
+}
+
+
+
+label{
+    display:block;
+    margin-top:15px;
+    margin-bottom:5px;
+    font-weight:bold;
+}
+
+input,
+select{
+    width:100%;
+    padding:12px;
+    font-size:16px;
+    border:1px solid var(--border);
+    border-radius:16px;
+}
+
+input:disabled{
+    background:#f1f1f1;
+    color:var(--muted);
+}
+
+
+
+button{
+    width:100%;
+    margin-top:25px;
+    padding:14px;
+    font-size:18px;
+    font-weight:bold;
+    background:var(--primary);
+    color:white;
+    border:none;
+    border-radius:16px;
+    cursor:pointer;
+}
+
+button:hover{
+    background:var(--primary-dark);
+}
+
+button:disabled{
+    background:var(--muted);
+    cursor:not-allowed;
+}
+
+
+
+#message{
+    text-align:center;
+    margin-top:15px;
+    font-weight:bold;
+}
+
+
+
+.stats{
+    display:flex;
+    gap:15px;
+    margin-top:20px;
+}
+
+.stat{
+    flex:1;
+    background:var(--blue-tint);
+    padding:15px;
+    text-align:center;
+    border-radius:16px;
+}
+
+.stat h3{
+    color:var(--primary);
+}
+
+
+
+@media(max-width:800px){
+
+    .container{
+        padding:15px;
+    }
+
+    .profile-box{
+        width:100%;
+    }
+
+    .stats{
+        flex-direction:column;
+    }
+
+}
+</style>
+
+</head>
+
+
+<body data-require="any">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+
+<!-- NAVIGATION -->
+
+<nav>
+
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+</div>
+
+<ul>
+
+<li><a href="index.html">Home</a></li>
+
+<li><a href="dashboard.html">Dashboard</a></li>
+
+<li><a href="listings.html">Listings</a></li>
+
+<li><a href="messages.html">Messages</a></li>
+
+<li><a href="#" onclick="logoutUser()">Logout</a></li>
+
+</ul>
+
+</nav>
+
+
+<!-- HEADER -->
+
+<section class="header">
+
+<h1>My Profile</h1>
+
+<p>Manage your personal information</p>
+
+</section>
+
+
+<!-- PROFILE -->
+
+<div class="container">
+
+<div class="profile-box">
+
+
+<div class="profile-pic">
+
+<img src="images/user.png" alt="Profile Picture">
+
+</div>
+
+
+<h2 style="text-align:center; color:var(--primary);">
+    My Information
+</h2>
+
+
+<p id="loading">
+    Loading your profile...
+</p>
+
+
+<form id="profileForm" style="display:none;">
+
+
+<!-- NAME -->
+
+<label for="name">
+    Full Name
+</label>
+
+<input
+    type="text"
+    id="name"
+    required
+>
+
+
+<!-- EMAIL -->
+
+<label for="email">
+    Email Address
+</label>
+
+<input
+    type="email"
+    id="email"
+    disabled
+>
+
+
+<!-- PHONE -->
+
+<label for="phone">
+    Phone Number
+</label>
+
+<input
+    type="tel"
+    id="phone"
+    placeholder="Enter your phone number"
+>
+
+
+<!-- UNIVERSITY -->
+
+<label for="university">
+    University
+</label>
+
+<select id="university">
+
+<option value="">
+    Select your university
+</option>
+
+<option value="Nelson Mandela University">
+    Nelson Mandela University
+</option>
+
+<option value="University of Cape Town">
+    University of Cape Town
+</option>
+
+<option value="University of Pretoria">
+    University of Pretoria
+</option>
+
+<option value="Stellenbosch University">
+    Stellenbosch University
+</option>
+
+<option value="University of the Witwatersrand">
+    University of the Witwatersrand
+</option>
+
+<option value="University of Johannesburg">
+    University of Johannesburg
+</option>
+
+<option value="University of the Free State">
+    University of the Free State
+</option>
+
+<option value="North-West University">
+    North-West University
+</option>
+
+<option value="Other">
+    Other
+</option>
+
+</select>
+
+
+<!-- PASSWORD -->
+
+<label for="password">
+    Password
+</label>
+
+<input
+    type="password"
+    id="password"
+    value="••••••••"
+    disabled
+>
+
+
+<button
+    type="submit"
+    id="saveButton"
+>
+    Save Changes
+</button>
+
+
+<p id="message"></p>
+
+
+</form>
+
+
+<!-- QUICK STATS -->
+
+<div class="stats">
+
+<div class="stat">
+
+<h3 id="bookingCount">
+    0
+</h3>
+
+<p>
+    Active Booking
+</p>
+
+</div>
+
+
+<div class="stat">
+
+<h3 id="savedCount">
+    0
+</h3>
+
+<p>
+    Saved Listings
+</p>
+
+</div>
+
+
+<div class="stat">
+
+<h3 id="messageCount">
+    0
+</h3>
+
+<p>
+    Messages
+</p>
+
+</div>
+
+</div>
+
+
+</div>
+
+</div>
+
+
+<!-- FOOTER -->
+
+<footer>
+
+<h2>
+    Dormly
+</h2>
+
+<br>
+
+<p>
+    Safe • Affordable • Verified Student Accommodation
+</p>
+
+<br>
+
+<p>
+    © 2026 Dormly. All Rights Reserved.
+</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+
+
+<script type="module">
+
+/*
+====================================================
+DORMLY PROFILE SYSTEM
+====================================================
+
+This page uses:
+
+Firebase Authentication
+        +
+Firestore
+
+The logged-in user's Firebase UID is used to
+find THEIR profile.
+
+Therefore:
+
+User A → sees User A's information
+User B → sees User B's information
+
+Nobody gets John Doe or another user's details.
+====================================================
+*/
+
+
+/*
+----------------------------------------------------
+WAIT FOR FIREBASE AUTH
+----------------------------------------------------
+*/
+
+document.addEventListener("DOMContentLoaded", function(){
+
+    /*
+    Give the Firebase script a moment to initialise.
+    */
+
+    setTimeout(loadUserProfile, 500);
+
+});
+
+
+/*
+----------------------------------------------------
+LOAD CURRENT USER
+----------------------------------------------------
+*/
+
+async function loadUserProfile(){
+
+    try{
+
+        /*
+        Your existing firebase.js / script.js should
+        expose Firebase auth and db.
+
+        */
+
+        if(!window.auth || !window.db){
+
+            console.error("Firebase auth or database was not found.");
+
+            document.getElementById("loading").innerText =
+                "Firebase could not be connected.";
+
+            return;
+
+        }
+
+
+        /*
+        Wait for Firebase to tell us who is logged in.
+        */
+
+        const { onAuthStateChanged } =
+            await import(
+                "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js"
+            );
+
+
+        onAuthStateChanged(window.auth, async function(user){
+
+            /*
+            Nobody logged in
+            */
+
+            if(!user){
+
+                window.location.href = "login.html";
+
+                return;
+
+            }
+
+
+            /*
+            User IS logged in.
+
+            This is their unique Firebase ID.
+            */
+
+            console.log("Logged-in user UID:", user.uid);
+
+
+            /*
+            Display Firebase email
+            */
+
+            document.getElementById("email").value =
+                user.email || "";
+
+
+            /*
+            Get this user's Firestore document
+            */
+
+            const {
+                doc,
+                getDoc
+            } = await import(
+                "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js"
+            );
+
+
+            const userRef =
+                doc(window.db, "users", user.uid);
+
+
+            const userSnap =
+                await getDoc(userRef);
+
+
+            /*
+            If the user has a Firestore profile,
+            load their information.
+            */
+
+            if(userSnap.exists()){
+
+                const userData =
+                    userSnap.data();
+
+
+                /*
+                NAME
+                */
+
+                document.getElementById("name").value =
+                    userData.name || "";
+
+
+                /*
+                PHONE
+                */
+
+                document.getElementById("phone").value =
+                    userData.phone || "";
+
+
+                /*
+                UNIVERSITY
+                */
+
+                document.getElementById("university").value =
+                    userData.university || "";
+
+
+                /*
+                Optional statistics if your
+                Firestore document contains them.
+                */
+
+                document.getElementById("bookingCount").innerText =
+                    userData.activeBookings || 0;
+
+                document.getElementById("savedCount").innerText =
+                    userData.savedListings || 0;
+
+                document.getElementById("messageCount").innerText =
+                    userData.messages || 0;
+
+            }
+
+
+            /*
+            Hide loading message
+            */
+
+            document.getElementById("loading").style.display =
+                "none";
+
+
+            /*
+            Show profile form
+            */
+
+            document.getElementById("profileForm").style.display =
+                "block";
+
+        });
+
+    }
+
+    catch(error){
+
+        console.error("Profile loading error:", error);
+
+        document.getElementById("loading").innerText =
+            "Unable to load your profile.";
+
+    }
+
+}
+
+
+/*
+----------------------------------------------------
+SAVE PROFILE
+----------------------------------------------------
+*/
+
+document.getElementById("profileForm").addEventListener(
+    "submit",
+    async function(event){
+
+        event.preventDefault();
+
+
+        const button =
+            document.getElementById("saveButton");
+
+        const message =
+            document.getElementById("message");
+
+
+        button.disabled = true;
+
+        button.innerText =
+            "Saving...";
+
+
+        try{
+
+            /*
+            Make sure a user is logged in.
+            */
+
+            const user =
+                window.auth.currentUser;
+
+
+            if(!user){
+
+                window.location.href =
+                    "login.html";
+
+                return;
+
+            }
+
+
+            /*
+            Import Firestore functions.
+            */
+
+            const {
+                doc,
+                updateDoc,
+                setDoc
+            } = await import(
+                "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js"
+            );
+
+
+            /*
+            Get the current user's information.
+            */
+
+            const name =
+                document.getElementById("name").value.trim();
+
+            const phone =
+                document.getElementById("phone").value.trim();
+
+            const university =
+                document.getElementById("university").value;
+
+
+            /*
+            Validate name.
+            */
+
+            if(!name){
+
+                message.innerText =
+                    "Please enter your full name.";
+
+                message.style.color =
+                    "red";
+
+                button.disabled = false;
+
+                button.innerText =
+                    "Save Changes";
+
+                return;
+
+            }
+
+
+            /*
+            IMPORTANT:
+
+            We use the logged-in user's UID.
+
+            This means the information is saved
+            to THEIR account only.
+            */
+
+            const userRef =
+                doc(window.db, "users", user.uid);
+
+
+            /*
+            Save/update profile.
+
+            setDoc with merge:true means:
+
+            - Existing information stays.
+            - New information is added.
+            - Existing information is updated.
+            */
+
+            await setDoc(
+                userRef,
+                {
+                    name: name,
+                    email: user.email,
+                    phone: phone,
+                    university: university,
+                    updatedAt: new Date()
+                },
+                {
+                    merge: true
+                }
+            );
+
+
+            /*
+            SUCCESS
+            */
+
+            message.innerText =
+                "✓ Profile updated successfully!";
+
+            message.style.color =
+                "green";
+
+
+            button.disabled = false;
+
+            button.innerText =
+                "Save Changes";
+
+        }
+
+        catch(error){
+
+            console.error(
+                "Profile update error:",
+                error
+            );
+
+
+            message.innerText =
+                "Could not save your profile. Please try again.";
+
+            message.style.color =
+                "red";
+
+
+            button.disabled = false;
+
+            button.innerText =
+                "Save Changes";
+
+        }
+
+    }
+);
+
+
+/*
+----------------------------------------------------
+LOGOUT
+----------------------------------------------------
+*/
+
+async function logoutUser(){
+
+    try{
+
+        if(window.auth){
+
+            const {
+                signOut
+            } = await import(
+                "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js"
+            );
+
+
+            await signOut(window.auth);
+
+        }
+
+
+        window.location.href =
+            "login.html";
+
+    }
+
+    catch(error){
+
+        console.error(
+            "Logout error:",
+            error
+        );
+
+    }
+
+}
+
+</script>
+
+<script type="module" src="js/guard.js"></script>
+</body>
+
+</html>
+
+

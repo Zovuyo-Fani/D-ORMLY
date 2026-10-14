@@ -1,0 +1,1106 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dormly | Messages</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            
+        }
+
+        body {
+            background: var(--bg);
+        }
+
+        
+
+        .header {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+            gap: 20px;
+            flex-wrap: wrap;
+            max-width: 1200px;
+            margin: auto;
+        }
+
+        
+
+        .chat-list {
+            width: 300px;
+            min-height: 500px;
+            background: white;
+            border-radius:16px;
+            box-shadow:0 4px 18px rgba(15,42,92,.08);
+            overflow: hidden;
+        }
+
+        .chat-list h3 {
+            background: var(--primary);
+            color: white;
+            padding: 15px;
+            text-align: center;
+        }
+
+        #chatList {
+            max-height: 450px;
+            overflow-y: auto;
+        }
+
+        .chat-item {
+            padding: 18px;
+            border-bottom: 1px solid var(--border);
+            cursor: pointer;
+        }
+
+        .chat-item:hover {
+            background: var(--blue-tint);
+        }
+
+        .chat-item.active {
+            background: var(--blue-tint);
+            border-left: 4px solid var(--primary);
+        }
+
+        .chat-name {
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 5px;
+        }
+
+        .chat-property {
+            font-size: 13px;
+            color: var(--muted);
+        }
+
+        .no-chats {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        
+
+        .chat-box {
+            flex: 1;
+            min-width: 300px;
+            max-width: 700px;
+            height: 500px;
+            background: white;
+            border-radius:16px;
+            box-shadow:0 4px 18px rgba(15,42,92,.08);
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        .chat-header {
+            background: var(--primary);
+            color: white;
+            padding: 15px 20px;
+        }
+
+        .chat-header h3 {
+            margin-bottom: 4px;
+        }
+
+        .chat-header p {
+            font-size: 13px;
+            opacity: 0.85;
+        }
+
+        .messages {
+            flex: 1;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        
+
+        .message {
+            margin-bottom: 15px;
+            max-width: 70%;
+            padding: 10px 13px;
+            border-radius:16px;
+            line-height: 1.4;
+            word-wrap: break-word;
+        }
+
+        .user {
+            background: var(--primary);
+            color: white;
+            margin-left: auto;
+            border-bottom-right-radius: 2px;
+        }
+
+        .landlord {
+            background: var(--blue-tint);
+            color: black;
+            margin-right: auto;
+            border-bottom-left-radius: 2px;
+        }
+
+        .message-time {
+            display: block;
+            font-size: 10px;
+            margin-top: 5px;
+            opacity: 0.7;
+        }
+
+        
+
+        .empty-chat {
+            height: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            padding: 30px;
+            color: var(--muted);
+        }
+
+        .empty-chat h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        
+
+        .input-box {
+            display: flex;
+            border-top: 1px solid var(--border);
+        }
+
+        .input-box input {
+            flex: 1;
+            padding: 15px;
+            border: none;
+            outline: none;
+            font-size: 16px;
+        }
+
+        .input-box button {
+            padding: 15px 25px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            font-weight: bold;
+        }
+
+        .input-box button:hover {
+            background: var(--primary-dark);
+        }
+
+        .input-box button:disabled {
+            background: var(--muted);
+            cursor: not-allowed;
+        }
+
+        
+
+        #messageStatus {
+            text-align: center;
+            padding: 8px;
+            font-size: 14px;
+            color: var(--danger);
+        }
+
+        
+
+        @media(max-width: 900px) {
+
+            .container {
+                flex-direction: column;
+                padding: 20px;
+            }
+
+            .chat-list,
+            .chat-box {
+                width: 100%;
+                max-width: none;
+            }
+
+        }
+</style>
+
+</head>
+
+
+<body data-require="any">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+
+    <!-- ===============================
+         NAVIGATION
+    =============================== -->
+
+    <nav>
+
+        <div class="logo">
+            <svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+        </div>
+
+
+        <ul>
+
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
+
+            <li>
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+            </li>
+
+            <li>
+                <a href="listings.html">
+                    Listings
+                </a>
+            </li>
+
+            <li>
+                <a href="profile.html">
+                    Profile
+                </a>
+            </li>
+
+            <li>
+                <a href="#" onclick="logout(); return false;">
+                    Logout
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+
+    <!-- ===============================
+         HEADER
+    =============================== -->
+
+    <section class="header">
+
+        <h1>
+            Messages
+        </h1>
+
+        <p>
+            Communicate directly with landlords about accommodation
+        </p>
+
+    </section>
+
+
+
+    <!-- ===============================
+         CHAT AREA
+    =============================== -->
+
+    <div class="container">
+
+
+        <!-- ===============================
+             CHAT LIST
+        =============================== -->
+
+        <div class="chat-list">
+
+            <h3>
+                Your Conversations
+            </h3>
+
+
+            <div id="chatList">
+
+                <div class="no-chats">
+                    Loading conversations...
+                </div>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ===============================
+             CHAT BOX
+        =============================== -->
+
+        <div class="chat-box">
+
+
+            <div
+                class="chat-header"
+                id="chatHeader"
+            >
+
+                <h3>
+                    Messages
+                </h3>
+
+                <p>
+                    Select a conversation to begin
+                </p>
+
+            </div>
+
+
+            <div
+                class="messages"
+                id="messages"
+            >
+
+                <div class="empty-chat">
+
+                    <div>
+
+                        <h3>
+                            No conversation selected
+                        </h3>
+
+                        <p>
+                            Select a landlord conversation from the left.
+                        </p>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+
+            <div id="messageStatus"></div>
+
+
+            <div class="input-box">
+
+                <input
+                    type="text"
+                    id="messageInput"
+                    placeholder="Type your message..."
+                    disabled
+                >
+
+
+                <button
+                    id="sendButton"
+                    disabled
+                >
+                    Send
+                </button>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===============================
+         FOOTER
+    =============================== -->
+
+    <footer>
+
+        <h2>
+            Dormly
+        </h2>
+
+        <br>
+
+        <p>
+            Safe • Affordable • Verified Student Accommodation
+        </p>
+
+        <br>
+
+        <p>
+            © 2026 Dormly. All Rights Reserved.
+        </p>
+
+    <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+
+
+    <!-- ===============================
+         FIREBASE
+    =============================== -->
+
+    <script type="module">
+
+        import {
+            auth,
+            db
+        } from "./js/firebase.js";
+
+
+        import {
+            onAuthStateChanged,
+            signOut
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+
+        import {
+            collection,
+            query,
+            where,
+            getDocs,
+            addDoc,
+            doc,
+            getDoc,
+            onSnapshot,
+            orderBy,
+            serverTimestamp
+        } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+
+        let currentUser = null;
+
+        let currentChatId = null;
+
+        let unsubscribeMessages = null;
+
+
+        const chatList =
+            document.getElementById("chatList");
+
+        const messages =
+            document.getElementById("messages");
+
+        const chatHeader =
+            document.getElementById("chatHeader");
+
+        const messageInput =
+            document.getElementById("messageInput");
+
+        const sendButton =
+            document.getElementById("sendButton");
+
+        const messageStatus =
+            document.getElementById("messageStatus");
+
+
+        // ==========================================
+        // CHECK LOGIN
+        // ==========================================
+
+        onAuthStateChanged(
+            auth,
+            async (user) => {
+
+                if (!user) {
+
+                    window.location.href =
+                        "login.html";
+
+                    return;
+
+                }
+
+
+                currentUser = user;
+
+                await loadChats();
+
+            }
+        );
+
+
+        // ==========================================
+        // LOAD USER'S REAL CHATS
+        // ==========================================
+
+        async function loadChats() {
+
+            chatList.innerHTML = "";
+
+
+            try {
+
+                const chatsRef =
+                    collection(db, "chats");
+
+
+                const chatsQuery =
+                    query(
+                        chatsRef,
+                        where(
+                            "participants",
+                            "array-contains",
+                            currentUser.uid
+                        )
+                    );
+
+
+                const snapshot =
+                    await getDocs(chatsQuery);
+
+
+                if (snapshot.empty) {
+
+                    chatList.innerHTML = `
+
+                        <div class="no-chats">
+
+                            <strong>
+                                No conversations yet
+                            </strong>
+
+                            <br><br>
+
+                            Your conversations with
+                            landlords will appear here.
+
+                        </div>
+
+                    `;
+
+                    return;
+
+                }
+
+
+                const chats = [];
+
+
+                snapshot.forEach((chatDoc) => {
+
+                    chats.push({
+                        id: chatDoc.id,
+                        ...chatDoc.data()
+                    });
+
+                });
+
+
+                for (const chat of chats) {
+
+                    const otherUserId =
+                        chat.participants.find(
+                            id => id !== currentUser.uid
+                        );
+
+
+                    let otherUserName =
+                        "Landlord";
+
+
+                    if (otherUserId) {
+
+                        try {
+
+                            const userRef =
+                                doc(
+                                    db,
+                                    "users",
+                                    otherUserId
+                                );
+
+
+                            const userSnapshot =
+                                await getDoc(userRef);
+
+
+                            if (userSnapshot.exists()) {
+
+                                const userData =
+                                    userSnapshot.data();
+
+
+                                otherUserName =
+                                    userData.name ||
+                                    userData.displayName ||
+                                    "Landlord";
+
+                            }
+
+                        } catch (error) {
+
+                            console.error(
+                                "Could not load landlord:",
+                                error
+                            );
+
+                        }
+
+                    }
+
+
+                    const item =
+                        document.createElement("div");
+
+
+                    item.className =
+                        "chat-item";
+
+
+                    item.innerHTML = `
+
+                        <div class="chat-name">
+                            ${escapeHTML(otherUserName)}
+                        </div>
+
+                        <div class="chat-property">
+                            ${escapeHTML(
+                                chat.propertyName ||
+                                "Accommodation"
+                            )}
+                        </div>
+
+                    `;
+
+
+                    item.addEventListener(
+                        "click",
+                        () => {
+
+                            document
+                                .querySelectorAll(".chat-item")
+                                .forEach(
+                                    element =>
+                                        element.classList.remove("active")
+                                );
+
+
+                            item.classList.add("active");
+
+
+                            openChat(
+                                chat.id,
+                                otherUserName,
+                                chat.propertyName ||
+                                "Accommodation"
+                            );
+
+                        }
+                    );
+
+
+                    chatList.appendChild(item);
+
+                }
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error loading chats:",
+                    error
+                );
+
+
+                chatList.innerHTML = `
+
+                    <div class="no-chats">
+
+                        Unable to load your conversations.
+
+                        <br><br>
+
+                        Please try again.
+
+                    </div>
+
+                `;
+
+            }
+
+        }
+
+
+        // ==========================================
+        // OPEN CHAT
+        // ==========================================
+
+        function openChat(
+            chatId,
+            otherUserName,
+            propertyName
+        ) {
+
+            currentChatId =
+                chatId;
+
+
+            chatHeader.innerHTML = `
+
+                <h3>
+                    ${escapeHTML(otherUserName)}
+                </h3>
+
+                <p>
+                    ${escapeHTML(propertyName)}
+                </p>
+
+            `;
+
+
+            messageInput.disabled =
+                false;
+
+
+            sendButton.disabled =
+                false;
+
+
+            messages.innerHTML = "";
+
+
+            if (unsubscribeMessages) {
+
+                unsubscribeMessages();
+
+            }
+
+
+            const messagesRef =
+                collection(
+                    db,
+                    "chats",
+                    chatId,
+                    "messages"
+                );
+
+
+            const messagesQuery =
+                query(
+                    messagesRef,
+                    orderBy("createdAt", "asc")
+                );
+
+
+            unsubscribeMessages =
+                onSnapshot(
+                    messagesQuery,
+                    (snapshot) => {
+
+                        messages.innerHTML = "";
+
+
+                        if (snapshot.empty) {
+
+                            messages.innerHTML = `
+
+                                <div class="empty-chat">
+
+                                    <div>
+
+                                        <h3>
+                                            No messages yet
+                                        </h3>
+
+                                        <p>
+                                            Start the conversation with this landlord.
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            `;
+
+                            return;
+
+                        }
+
+
+                        snapshot.forEach(
+                            (messageDoc) => {
+
+                                const data =
+                                    messageDoc.data();
+
+
+                                const message =
+                                    document.createElement("div");
+
+
+                                message.className =
+                                    "message " +
+                                    (
+                                        data.senderId ===
+                                        currentUser.uid
+                                            ? "user"
+                                            : "landlord"
+                                    );
+
+
+                                let timeText = "";
+
+
+                                if (
+                                    data.createdAt &&
+                                    data.createdAt.toDate
+                                ) {
+
+                                    timeText =
+                                        data.createdAt
+                                            .toDate()
+                                            .toLocaleString();
+
+                                }
+
+
+                                message.innerHTML = `
+
+                                    ${escapeHTML(
+                                        data.text || ""
+                                    )}
+
+                                    <span class="message-time">
+                                        ${escapeHTML(timeText)}
+                                    </span>
+
+                                `;
+
+
+                                messages.appendChild(
+                                    message
+                                );
+
+                            }
+                        );
+
+
+                        messages.scrollTop =
+                            messages.scrollHeight;
+
+                    },
+                    (error) => {
+
+                        console.error(
+                            "Message listener error:",
+                            error
+                        );
+
+
+                        messageStatus.textContent =
+                            "Unable to load messages.";
+
+                    }
+                );
+
+        }
+
+
+        // ==========================================
+        // SEND MESSAGE
+        // ==========================================
+
+        async function sendMessage() {
+
+            const text =
+                messageInput.value.trim();
+
+
+            if (!text) return;
+
+
+            if (!currentChatId) {
+
+                messageStatus.textContent =
+                    "Please select a conversation first.";
+
+                return;
+
+            }
+
+
+            try {
+
+                sendButton.disabled =
+                    true;
+
+
+                messageStatus.textContent =
+                    "";
+
+
+                const messagesRef =
+                    collection(
+                        db,
+                        "chats",
+                        currentChatId,
+                        "messages"
+                    );
+
+
+                await addDoc(
+                    messagesRef,
+                    {
+
+                        text: text,
+
+                        senderId:
+                            currentUser.uid,
+
+                        senderName:
+                            currentUser.displayName ||
+                            currentUser.email,
+
+                        createdAt:
+                            serverTimestamp()
+
+                    }
+                );
+
+
+                messageInput.value = "";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Error sending message:",
+                    error
+                );
+
+
+                messageStatus.textContent =
+                    "Message could not be sent.";
+
+            }
+
+
+            sendButton.disabled =
+                false;
+
+        }
+
+
+        // ==========================================
+        // SEND BUTTON
+        // ==========================================
+
+        sendButton.addEventListener(
+            "click",
+            sendMessage
+        );
+
+
+        // ==========================================
+        // ENTER TO SEND
+        // ==========================================
+
+        messageInput.addEventListener(
+            "keydown",
+            function (event) {
+
+                if (
+                    event.key === "Enter"
+                ) {
+
+                    event.preventDefault();
+
+                    sendMessage();
+
+                }
+
+            }
+        );
+
+
+        // ==========================================
+        // LOGOUT
+        // ==========================================
+
+        window.logout = async function () {
+
+            try {
+
+                if (unsubscribeMessages) {
+
+                    unsubscribeMessages();
+
+                }
+
+
+                await signOut(auth);
+
+
+                window.location.href =
+                    "login.html";
+
+
+            } catch (error) {
+
+                console.error(
+                    "Logout error:",
+                    error
+                );
+
+            }
+
+        };
+
+
+        // ==========================================
+        // SECURITY
+        // ==========================================
+
+        function escapeHTML(value) {
+
+            const div =
+                document.createElement("div");
+
+            div.textContent =
+                value;
+
+            return div.innerHTML;
+
+        }
+
+    </script>
+
+
+<script type="module" src="js/guard.js"></script>
+</body>
+
+</html>

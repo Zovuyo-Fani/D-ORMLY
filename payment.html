@@ -1,0 +1,729 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dormly | Payment</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    
+}
+
+body {
+    background: var(--bg);
+    color: var(--text);
+}
+
+.banner {
+    background: var(--primary);
+    color: white;
+    text-align: center;
+    padding: 45px 20px;
+}
+
+.banner h1 {
+    font-size: 38px;
+    margin-bottom: 10px;
+}
+
+.container {
+    display: flex;
+    justify-content: center;
+    padding: 35px 15px;
+}
+
+.payment-box {
+    background: white;
+    width: 100%;
+    max-width: 700px;
+    padding: 30px;
+    border-radius:16px;
+    box-shadow:0 4px 18px rgba(15,42,92,.08);
+}
+
+.payment-box h2 {
+    color: var(--primary);
+    text-align: center;
+    margin-bottom: 22px;
+}
+
+#loading {
+    text-align: center;
+    color: var(--primary);
+    font-weight: bold;
+    padding: 20px;
+}
+
+.summary, .payment-info {
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 20px;
+    overflow-wrap: anywhere;
+}
+
+.summary {
+    background: var(--blue-tint);
+}
+
+.payment-info {
+    background: #fafafa;
+    border: 1px solid var(--border);
+}
+
+.summary h3, .payment-info h3 {
+    color: var(--primary);
+    margin-bottom: 15px;
+}
+
+.summary p, .payment-info p {
+    margin: 12px 0;
+    line-height: 1.6;
+}
+
+.summary hr {
+    margin: 15px 0;
+    border: none;
+    border-top: 1px solid var(--border);
+}
+
+.total {
+    color: var(--primary);
+    font-size: 21px;
+}
+
+.reference {
+    background: var(--blue-tint);
+    border: 1px dashed var(--primary);
+    border-radius: 6px;
+    padding: 12px;
+    font-size: 17px;
+    font-weight: bold;
+    word-break: break-word;
+}
+
+input[type="file"] {
+    width: 100%;
+    margin-top: 10px;
+    padding: 10px;
+    border: 1px solid var(--border);
+    border-radius:16px;
+    background: white;
+}
+
+button {
+    width: 100%;
+    margin-top: 15px;
+    padding: 14px;
+    font-size: 16px;
+    font-weight: bold;
+    background: var(--primary);
+    color: white;
+    border: none;
+    border-radius:16px;
+    cursor: pointer;
+}
+
+button:hover:not(:disabled) {
+    background: var(--primary-dark);
+}
+
+button:disabled {
+    background: var(--muted);
+    cursor: not-allowed;
+}
+
+.secondary-button {
+    background: #fff;
+    color: var(--primary);
+    border: 1px solid var(--primary);
+}
+
+.secondary-button:hover:not(:disabled) {
+    background: var(--blue-tint);
+}
+
+#paymentStatus, #message {
+    text-align: center;
+    margin-top: 15px;
+    font-weight: bold;
+    line-height: 1.5;
+    overflow-wrap: anywhere;
+}
+
+.notice {
+    font-size: 14px;
+    color: var(--muted);
+}
+
+@media (max-width: 800px) {
+
+    .banner h1 {
+        font-size: 30px;
+    }
+
+    .payment-box {
+        padding: 20px;
+    }
+}
+</style>
+</head>
+
+<body data-require="student">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+<nav>
+    <div class="logo"><svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span></div>
+
+    <ul>
+        <li><a href="index.html">Home</a></li>
+        <li><a href="about.html">About</a></li>
+        <li><a href="listings.html">Listings</a></li>
+        <li><a href="contact.html">Contact</a></li>
+        <li><a href="dashboard.html">Dashboard</a></li>
+    </ul>
+</nav>
+
+<section class="banner">
+    <h1>Secure Booking Payment</h1>
+    <p>Submit your R70 booking fee and proof of payment.</p>
+</section>
+
+<main class="container">
+<div class="payment-box">
+
+    <h2>Booking Summary</h2>
+
+    <div id="loading">Loading booking information...</div>
+
+    <div id="paymentContent" hidden>
+
+        <section class="summary">
+            <h3>Accommodation Details</h3>
+
+            <p><strong>Residence:</strong>
+                <span id="propertyName">-</span>
+            </p>
+
+            <p><strong>Location:</strong>
+                <span id="propertyLocation">-</span>
+            </p>
+
+            <p><strong>Monthly Rent:</strong>
+                R<span id="rent">0</span>
+            </p>
+
+            <p><strong>Stay Period:</strong>
+                <span id="stayPeriod">-</span>
+            </p>
+
+            <hr>
+
+            <p><strong>Booking Fee:</strong> R70</p>
+
+            <hr>
+
+            <p class="total">
+                <strong>Total Due Today: R70</strong>
+            </p>
+        </section>
+
+        <section class="payment-info">
+            <h3>Student Information</h3>
+
+            <p><strong>Name:</strong>
+                <span id="studentName">-</span>
+            </p>
+
+            <p><strong>Email:</strong>
+                <span id="studentEmail">-</span>
+            </p>
+        </section>
+
+        <section class="payment-info">
+            <h3>Step 1: Make Your Payment</h3>
+
+            <p>
+                Open your banking app and transfer exactly R70
+                to the verified Dormly payment account.
+            </p>
+
+            <p><strong>Account holder:</strong>
+                <span id="accountHolder">MT NAKENG</span>
+            </p>
+
+            <p><strong>Bank:</strong>
+                <span id="bankName">STANDARD BANK</span>
+            </p>
+
+            <p><strong>Account number:</strong>
+                <span id="accountNumber">015271986</span>
+            </p>
+
+        
+            <p><strong>Branch code:</strong>
+                <span id="branchCode">NOT CONFIGURED</span>
+            </p>
+
+            <p><strong>Your payment reference:</strong></p>
+            <p class="reference" id="paymentReference">Generating...</p>
+
+            <button type="button" id="copyReference"
+                    class="secondary-button">
+                Copy Payment Reference
+            </button>
+
+            <p class="notice">
+                Use the exact reference above when making the transfer
+                so Dormly can identify your payment.
+            </p>
+        </section>
+
+        <section class="payment-info">
+            <h3>Step 2: Upload Proof of Payment</h3>
+
+            <p>
+                After making the transfer, upload the proof of payment
+                provided by your bank. Dormly will review the submission
+                before confirming your booking.
+            </p>
+
+            <label for="proofFile">
+                <strong>Proof of payment (JPG, PNG or PDF)</strong>
+            </label>
+
+            <input
+                type="file"
+                id="proofFile"
+                accept=".jpg,.jpeg,.png,.pdf,image/jpeg,image/png,application/pdf"
+                required
+            >
+
+            <p class="notice">
+                Maximum file size: 5 MB. Never upload your banking PIN,
+                password, CVV or card details.
+            </p>
+
+            <button type="button" id="submitProof">
+                Submit Proof of Payment — R70
+            </button>
+
+            <p id="paymentStatus" role="status" aria-live="polite"></p>
+        </section>
+
+    </div>
+
+    <p id="message" role="alert" aria-live="polite"></p>
+
+</div>
+</main>
+
+<footer>
+    <h2>Dormly</h2>
+    <p style="margin-top:12px">
+        Safe • Affordable • Verified Student Accommodation
+    </p>
+    <p style="margin-top:12px">
+        © 2026 Dormly. All Rights Reserved.
+    </p>
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module">
+import { auth, db } from "./js/firebase.js";
+
+import {
+    onAuthStateChanged
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+
+import {
+    getApp
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+
+import {
+    getStorage,
+    ref,
+    uploadBytes,
+    getDownloadURL
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+
+import {
+    doc,
+    getDoc,
+    addDoc,
+    collection,
+    serverTimestamp
+} from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+
+const storage = getStorage(getApp());
+
+const loading = document.getElementById("loading");
+const paymentContent = document.getElementById("paymentContent");
+const message = document.getElementById("message");
+const paymentStatus = document.getElementById("paymentStatus");
+const copyButton = document.getElementById("copyReference");
+const submitButton = document.getElementById("submitProof");
+const proofFile = document.getElementById("proofFile");
+
+let currentUser = null;
+let selectedPropertyId = null;
+let paymentReference = null;
+let isSubmitting = false;
+
+const BOOKING_FEE = 70;
+const MAX_FILE_SIZE = 5 * 1024 * 1024;
+
+// Replace these values with your VERIFIED banking details.
+// Do not publish real account details in public code repositories.
+const BANK_DETAILS = {
+    accountHolder: "MT NAKENG",
+    bankName: "STANDARD BANK",
+    accountNumber: "015271986",
+    accountType: "SAVINGS",
+    branchCode: "051001"
+};
+
+function showMessage(text, color = "var(--danger)") {
+    message.textContent = text;
+    message.style.color = color;
+}
+
+function showPaymentStatus(text, color = "var(--primary)") {
+    paymentStatus.textContent = text;
+    paymentStatus.style.color = color;
+}
+
+
+function configureBankDetails() {
+    const bankFields = {
+        accountHolder: BANK_DETAILS.accountHolder,
+        bankName: BANK_DETAILS.bankName,
+        accountNumber: BANK_DETAILS.accountNumber,
+        accountType: BANK_DETAILS.accountType,
+        branchCode: BANK_DETAILS.branchCode
+    };
+
+    for (const [id, value] of Object.entries(bankFields)) {
+        const element = document.getElementById(id);
+
+        if (!element) {
+            console.error(
+                `Payment page HTML is missing an element with id="${id}".`
+            );
+            continue;
+        }
+
+        element.textContent =
+            value || "Not configured";
+    }
+}
+
+
+function createPaymentReference(uid, propertyId) {
+    // Stable for the same student and property.
+    // The reference is not proof that payment has been made.
+    const userPart = uid.replace(/[^a-zA-Z0-9]/g, "").slice(0, 8);
+    const propertyPart = propertyId
+        .replace(/[^a-zA-Z0-9]/g, "")
+        .slice(0, 8);
+
+    return `DORMLY-${userPart}-${propertyPart}`.toUpperCase();
+}
+
+function validateBankDetails() {
+    return Object.values(BANK_DETAILS).every(value =>
+        value.trim() !== "" &&
+        value !== "NOT CONFIGURED"
+    );
+}
+
+async function loadBooking(user) {
+    const params = new URLSearchParams(window.location.search);
+
+    selectedPropertyId =
+        params.get("id") ||
+        localStorage.getItem("dormlyPropertyId");
+
+    if (!selectedPropertyId) {
+        loading.textContent =
+            "No accommodation selected. Return to Listings and choose a property.";
+        return;
+    }
+
+    const userSnapshot = await getDoc(doc(db, "users", user.uid));
+
+    if (!userSnapshot.exists()) {
+        loading.textContent =
+            "Your student profile could not be found. Please contact Dormly.";
+        return;
+    }
+
+    const userData = userSnapshot.data();
+
+    const propertySnapshot = await getDoc(
+        doc(db, "properties", selectedPropertyId)
+    );
+
+    if (!propertySnapshot.exists()) {
+        loading.textContent =
+            "This accommodation could not be found. Please return to Listings.";
+        return;
+    }
+
+    const property = propertySnapshot.data();
+
+    document.getElementById("studentName").textContent =
+        userData.name || user.displayName || "Student";
+
+    document.getElementById("studentEmail").textContent =
+        user.email || userData.email || "";
+
+    document.getElementById("propertyName").textContent =
+        property.name || property.title || "Accommodation";
+
+    document.getElementById("propertyLocation").textContent =
+        property.location || property.address || "Location unavailable";
+
+    const rent = property.price ?? property.rent ?? 0;
+
+    document.getElementById("rent").textContent =
+        typeof rent === "number" ? rent.toLocaleString("en-ZA") : rent;
+
+    document.getElementById("stayPeriod").textContent =
+        localStorage.getItem("dormlyStayPeriod") || "Not selected";
+
+    paymentReference = createPaymentReference(
+        user.uid,
+        selectedPropertyId
+    );
+
+    document.getElementById("paymentReference").textContent =
+        paymentReference;
+
+    localStorage.setItem("dormlyPropertyId", selectedPropertyId);
+
+    configureBankDetails();
+
+    loading.style.display = "none";
+    paymentContent.hidden = false;
+
+    if (!validateBankDetails()) {
+        showPaymentStatus(
+            "Payments are not enabled yet. Dormly must configure and verify its banking details.",
+            "#c62828"
+        );
+
+        submitButton.disabled = true;
+        copyButton.disabled = false;
+        return;
+    }
+
+    submitButton.disabled = false;
+}
+
+copyButton.addEventListener("click", async () => {
+    if (!paymentReference) {
+        showPaymentStatus("The payment reference is not ready.", "#c62828");
+        return;
+    }
+
+    try {
+        await navigator.clipboard.writeText(paymentReference);
+        showPaymentStatus("Payment reference copied.", "#16803c");
+    } catch (error) {
+        showPaymentStatus(
+            "Copy failed. Please select and copy the reference manually.",
+            "#c62828"
+        );
+    }
+});
+
+proofFile.addEventListener("change", () => {
+    showPaymentStatus("");
+
+    const file = proofFile.files[0];
+
+    if (!file) return;
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "application/pdf"
+    ];
+
+    if (!allowedTypes.includes(file.type)) {
+        proofFile.value = "";
+        showPaymentStatus(
+            "Choose a JPG, PNG or PDF file.",
+            "#c62828"
+        );
+        return;
+    }
+
+    if (file.size > MAX_FILE_SIZE) {
+        proofFile.value = "";
+        showPaymentStatus(
+            "The file exceeds 5 MB. Please choose a smaller file.",
+            "#c62828"
+        );
+    }
+});
+
+submitButton.addEventListener("click", async () => {
+    if (isSubmitting) return;
+
+    if (!currentUser || !selectedPropertyId || !paymentReference) {
+        showPaymentStatus(
+            "Your booking information is incomplete. Refresh the page and try again.",
+            "#c62828"
+        );
+        return;
+    }
+
+    if (!validateBankDetails()) {
+        showPaymentStatus(
+            "Dormly's verified bank details have not been configured yet.",
+            "#c62828"
+        );
+        return;
+    }
+
+    const file = proofFile.files[0];
+
+    if (!file) {
+        showPaymentStatus(
+            "Please select your proof of payment first.",
+            "#c62828"
+        );
+        return;
+    }
+
+    const allowedTypes = [
+        "image/jpeg",
+        "image/png",
+        "application/pdf"
+    ];
+
+    if (!allowedTypes.includes(file.type) ||
+        file.size > MAX_FILE_SIZE) {
+        showPaymentStatus(
+            "Choose a valid JPG, PNG or PDF file up to 5 MB.",
+            "#c62828"
+        );
+        return;
+    }
+
+    isSubmitting = true;
+    submitButton.disabled = true;
+    copyButton.disabled = true;
+
+    try {
+        showPaymentStatus("Uploading your proof of payment...");
+
+        const safeFileName = file.name.replace(/[^a-zA-Z0-9._-]/g, "_");
+
+        const storagePath =
+            `paymentProofs/${currentUser.uid}/` +
+            `${selectedPropertyId}/${Date.now()}_${safeFileName}`;
+
+        const storageReference = ref(storage, storagePath);
+
+        await uploadBytes(storageReference, file, {
+            contentType: file.type
+        });
+
+        const proofUrl = await getDownloadURL(storageReference);
+
+        showPaymentStatus("Saving your submission...");
+
+        const submission = await addDoc(
+            collection(db, "paymentSubmissions"),
+            {
+                studentId: currentUser.uid,
+                studentName:
+                    document.getElementById("studentName").textContent,
+                studentEmail: currentUser.email || "",
+                propertyId: selectedPropertyId,
+                propertyName:
+                    document.getElementById("propertyName").textContent,
+                propertyLocation:
+                    document.getElementById("propertyLocation").textContent,
+                stayPeriod:
+                    document.getElementById("stayPeriod").textContent,
+                bookingFee: BOOKING_FEE,
+                currency: "ZAR",
+                paymentReference: paymentReference,
+                proofUrl: proofUrl,
+                proofStoragePath: storagePath,
+                fileName: file.name,
+                status: "pending_review",
+                submittedAt: serverTimestamp()
+            }
+        );
+
+        showPaymentStatus(
+            "Proof of payment submitted successfully. Your submission ID is " +
+            submission.id +
+            ". Dormly must verify your payment before confirming your booking.",
+            "#16803c"
+        );
+
+        proofFile.value = "";
+
+    } catch (error) {
+        console.error("Proof-of-payment submission error:", error);
+
+        showPaymentStatus(
+            "We could not submit your proof of payment. Check your internet connection and Firebase Storage/Firestore rules, then try again. If the upload succeeded but saving failed, contact Dormly before submitting again.",
+            "#c62828"
+        );
+
+    } finally {
+        isSubmitting = false;
+        submitButton.disabled = !validateBankDetails();
+        copyButton.disabled = false;
+    }
+});
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) {
+        window.location.href = "login.html";
+        return;
+    }
+
+    currentUser = user;
+
+    try {
+        await loadBooking(user);
+    } catch (error) {
+        console.error("Payment page loading error:", error);
+
+        loading.textContent =
+            "We could not load your booking. Check your Firebase configuration and Firestore permissions.";
+
+        showMessage(
+            "An error occurred while loading your booking. Refresh the page and check the browser console."
+        );
+    }
+});
+</script>
+
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

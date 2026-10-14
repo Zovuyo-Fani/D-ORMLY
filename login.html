@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dormly | Login</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+
+.container{
+display:flex;
+justify-content:center;
+align-items:center;
+height:85vh;
+}
+
+.login-box{
+background:white;
+width:420px;
+padding:40px;
+border-radius:16px;
+box-shadow:0 4px 18px rgba(15,42,92,.08);
+}
+
+.login-box h1{
+text-align:center;
+color:var(--primary);
+margin-bottom:10px;
+}
+
+.login-box p{
+text-align:center;
+margin-bottom:25px;
+color: var(--muted);
+}
+
+label{
+font-weight:bold;
+display:block;
+margin-top:15px;
+margin-bottom:5px;
+}
+
+input{
+width:100%;
+padding:12px;
+font-size:16px;
+border:1px solid var(--border);
+border-radius:16px;
+}
+
+button{
+width:100%;
+padding:14px;
+margin-top:25px;
+background:var(--primary);
+color:white;
+font-size:18px;
+border:none;
+border-radius:16px;
+cursor:pointer;
+font-weight:bold;
+}
+
+button:hover{
+background:var(--primary-dark);
+}
+
+.links{
+text-align:center;
+margin-top:20px;
+}
+
+.links a{
+text-decoration:none;
+color:var(--primary);
+font-weight:bold;
+display:block;
+margin-top:10px;
+}
+
+.links a:hover{
+color:var(--accent);
+}
+
+@media(max-width:700px){
+
+.login-box{
+width:90%;
+}
+
+}
+</style>
+
+</head>
+
+<body>
+
+<nav>
+
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+</div>
+
+<ul>
+<li><a href="index.html">Home</a></li>
+<li><a href="about.html">About</a></li>
+<li><a href="listings.html">Listings</a></li>
+<li><a href="contact.html">Contact</a></li>
+<li><a href="login.html" class="nav-btn outline">Login</a></li>
+<li><a href="signup.html" class="nav-btn green">Sign Up</a></li>
+</ul>
+
+</nav>
+
+<div class="container">
+
+<div class="login-box">
+
+<h1>Welcome Back</h1>
+
+<p>Log in to your Dormly account</p>
+
+<form id="loginForm">
+
+<label>Email Address</label>
+
+<input
+id="email"
+type="email"
+placeholder="Enter your email"
+required>
+
+<label>Password</label>
+
+<input
+id="password"
+type="password"
+placeholder="Enter your password"
+required>
+
+<div id="formMessage" role="alert" style="display:none;background:var(--danger-tint);color:var(--danger);border-radius:10px;padding:12px 14px;font-size:14px;margin-top:16px;"></div>
+<button type="submit">Login</button>
+
+</form>
+
+<div class="links">
+
+<a href="forgotpassword.html">Forgot Password?</a>
+
+<a href="signup.html">
+Don't have an account? Sign Up
+</a>
+
+</div>
+
+</div>
+
+</div>
+
+<footer>
+
+<h2>Dormly</h2>
+
+<br>
+
+<p>
+Safe • Affordable • Verified Student Accommodation
+</p>
+
+<br>
+
+<p>
+© 2026 Dormly. All Rights Reserved.
+</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module" src="js/script.js"></script>
+
+<script>
+document.getElementById("loginForm").addEventListener("submit", function(e){
+    e.preventDefault();
+    login();
+});
+</script>
+
+<script>
+// If the site scripts have not loaded, say exactly why instead of silently reloading the page
+(function(){
+  var f=document.getElementById("loginForm");
+  if(!f) return;
+
+  function show(text){
+    var b=document.getElementById("formMessage");
+    b.textContent=text; b.style.display="block";
+  }
+
+  function diagnose(){
+    if(location.protocol==="file:"){
+      show("PROBLEM FOUND: you opened this page by double-clicking the file (the address starts with file://). Login only works from a web address. Upload the site to GitHub Pages / Firebase Hosting, or for testing run  python -m http.server  in the site folder and open http://localhost:8000");
+      return;
+    }
+    fetch("js/script.js",{cache:"no-store"}).then(function(r){
+      if(!r.ok){
+        show("PROBLEM FOUND: the file js/script.js is missing on your website (error "+r.status+"). The js folder was not uploaded. Upload the whole js folder next to the HTML files and try again.");
+        return;
+      }
+      return fetch("https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js",{mode:"no-cors"}).then(function(){
+        show("js/script.js is there but did not run. Press F12, open the Console tab and tell me the red error you see. (Also try a hard refresh with Ctrl+Shift+R in case your browser kept an old copy.)");
+      },function(){
+        show("PROBLEM FOUND: your browser cannot reach Google's Firebase servers. Check your internet connection and turn off any ad blocker or VPN for this site, then refresh.");
+      });
+    },function(){
+      show("Could not check the site files. Check your internet connection and refresh.");
+    });
+  }
+
+  f.addEventListener("submit",function(e){
+    if(typeof window.login!=="function"){
+      e.preventDefault();
+      show("Checking what went wrong...");
+      diagnose();
+    }
+  });
+})();
+</script>
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

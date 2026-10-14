@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dormly | Add Property</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+
+.container{
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:40px;
+border-radius:16px;
+box-shadow:0 4px 18px rgba(15,42,92,.08);
+}
+
+.container h1{
+color:var(--primary);
+text-align:center;
+margin-bottom:10px;
+}
+
+.container p{
+text-align:center;
+color: var(--muted);
+margin-bottom:30px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-top:20px;
+margin-bottom:8px;
+}
+
+input,
+textarea,
+select{
+
+width:100%;
+padding:12px;
+border:1px solid var(--border);
+border-radius:16px;
+font-size:16px;
+
+}
+
+textarea{
+
+resize:vertical;
+height:120px;
+
+}
+
+.row{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+
+}
+
+button{
+
+width:100%;
+padding:15px;
+margin-top:35px;
+background:var(--primary);
+color:white;
+font-size:18px;
+font-weight:bold;
+border:none;
+border-radius:16px;
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:var(--primary-dark);
+
+}
+
+@media(max-width:700px){
+
+.row{
+
+grid-template-columns:1fr;
+
+}
+
+.container{
+
+margin:20px;
+padding:25px;
+
+}
+
+}
+</style>
+
+</head>
+
+<body onload="protectPage()" data-require="landlord">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+<nav>
+
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+</div>
+
+<ul>
+
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="listings.html">Listings</a></li>
+<li><a href="profile.html">Profile</a></li>
+<li><a href="#" onclick="logout()">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<div class="container">
+
+<h1>Add New Property</h1>
+
+<p>Upload a verified student accommodation property.</p>
+
+<form id="propertyForm" onsubmit="event.preventDefault(); uploadProperty();">
+
+<label>Property Name</label>
+
+<input
+id="propertyName"
+type="text"
+placeholder="Property Name"
+required>
+
+<label>Description</label>
+
+<textarea
+id="description"
+placeholder="Describe the property..."
+required></textarea>
+
+<div class="row">
+
+<div>
+
+<label>Monthly Rent</label>
+
+<input
+id="rent"
+type="number"
+placeholder="Monthly Rent"
+required>
+
+</div>
+
+<div>
+
+<label>University</label>
+
+<input
+id="university"
+type="text"
+placeholder="Nearby University"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Address</label>
+
+<input
+id="address"
+type="text"
+placeholder="Property Address"
+required>
+
+</div>
+
+<div>
+
+<label>Contact Number</label>
+
+<input
+id="phone"
+type="tel"
+placeholder="Contact Number"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Number of Rooms</label>
+
+<input
+id="rooms"
+type="number"
+placeholder="Number of Rooms"
+required>
+
+</div>
+
+<div>
+
+<label>Number of Bathrooms</label>
+
+<input
+id="bathrooms"
+type="number"
+placeholder="Number of Bathrooms"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Wi-Fi Available</label>
+
+<select id="wifi">
+
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Parking Available</label>
+
+<select id="parking">
+
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Property Status</label>
+
+<select id="status">
+
+<option value="Available">Available</option>
+<option value="Occupied">Occupied</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Property Type</label>
+
+<select id="propertyType">
+
+<option value="Apartment">Apartment</option>
+<option value="House">House</option>
+<option value="Student Residence">Student Residence</option>
+<option value="Bachelor Flat">Bachelor Flat</option>
+<option value="Shared Accommodation">Shared Accommodation</option>
+
+</select>
+
+</div>
+
+</div>
+
+<button type="submit">
+
+Upload Property
+
+</button>
+
+</form>
+
+</div>
+
+<footer>
+
+<h2>Dormly</h2>
+
+<br>
+
+<p>Safe • Affordable • Verified Student Accommodation</p>
+
+<br>
+
+<p>© 2026 Dormly. All Rights Reserved.</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module" src="js/script.js"></script>
+
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

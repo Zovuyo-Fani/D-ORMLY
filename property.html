@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dormly | Property Details</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+
+.container{
+max-width:1100px;
+margin:40px auto;
+background:white;
+padding:30px;
+border-radius:16px;
+box-shadow:0 0 15px rgba(0,0,0,.15);
+}
+
+
+
+.property-image{
+
+width:100%;
+height:450px;
+object-fit:cover;
+border-radius:16px;
+
+}
+
+
+
+.details{
+
+margin-top:30px;
+
+}
+
+.details h1{
+
+color:var(--primary);
+margin-bottom:15px;
+
+}
+
+.price{
+
+font-size:30px;
+color:var(--price);
+font-weight:bold;
+margin-bottom:20px;
+
+}
+
+.info{
+
+line-height:2;
+font-size:18px;
+
+}
+
+.description{
+
+margin-top:25px;
+line-height:1.8;
+
+}
+
+.bookBtn{
+
+margin-top:35px;
+width:100%;
+padding:16px;
+background:var(--primary);
+color:white;
+font-size:18px;
+font-weight:bold;
+border:none;
+border-radius:6px;
+cursor:pointer;
+
+}
+
+.bookBtn:hover{
+
+background:var(--primary-dark);
+
+}
+
+.loading{
+
+text-align:center;
+font-size:22px;
+padding:60px;
+color:var(--muted);
+
+}
+
+@media(max-width:900px){
+
+.container{
+
+margin:20px;
+
+}
+
+.property-image{
+
+height:250px;
+
+}
+
+}
+</style>
+
+</head>
+
+<body onload="protectPage()" data-require="any">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},6000);
+</script>
+
+
+<nav>
+
+<div class="logo">
+
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+
+</div>
+
+<ul>
+
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="listings.html">Listings</a></li>
+<li><a href="add-property.html">Add Property</a></li>
+<li><a href="#" onclick="logout()">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<div class="container" id="propertyDetails">
+
+<div class="loading">
+
+Loading property...
+
+</div>
+
+</div>
+
+<footer>
+
+<h2>Dormly</h2>
+
+<br>
+
+<p>Safe • Affordable • Verified Student Accommodation</p>
+
+<br>
+
+<p>© 2026 Dormly. All Rights Reserved.</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module" src="js/script.js"></script>
+<script type="module" src="js/property.js"></script>
+
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>
