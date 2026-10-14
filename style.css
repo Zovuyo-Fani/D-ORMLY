@@ -1,0 +1,304 @@
+/* =========================================================
+   DORMLY – shared styles (matches the Dormly prototype)
+   Change the colours in :root below and every page updates.
+   ========================================================= */
+
+:root {
+  /* Prototype palette */
+  --navy:          #0F2A5C;
+  --navy-dark:     #081B3D;
+  --navy-soft:     #4A5C82;
+  --green:         #1E9B4F;
+  --green-bright:  #34C759;
+  --green-dark:    #17803f;
+  --green-tint:    #E6F5EB;
+  --bg:            #F6F7FA;
+  --card:          #FFFFFF;
+  --text:          #1B2430;
+  --muted:         #657085;
+  --border:        #E4E7EC;
+  --danger:        #C4432B;
+  --danger-tint:   #FBEAE6;
+  --warn-tint:     #FFF8E8;
+  --warn-border:   #F1DFA6;
+  --warn-text:     #7A5B12;
+
+  /* Names the existing pages already use, mapped to the prototype palette */
+  --primary:           var(--navy);        /* nav, buttons, headings */
+  --primary-dark:      var(--navy-dark);   /* button hover */
+  --accent:            var(--green);       /* logo "ly", hovers, highlights */
+  --footer-bg:         var(--navy-dark);
+  --price:             var(--navy);
+  --success:           var(--green);
+
+  --blue-bright:       var(--navy);        /* buttons / links on room, reset pages */
+  --blue-bright-dark:  var(--navy-dark);
+  --blue-soft:         var(--green);       /* gradient partner */
+  --blue-tint:         #EEF3FF;            /* light panels (escrow / chat) */
+
+  --radius:     16px;
+  --radius-sm:  10px;
+  --shadow:     0 14px 30px rgba(15, 42, 92, 0.12);
+  --shadow-sm:  0 4px 18px rgba(15, 42, 92, 0.08);
+}
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body {
+  font-family: 'Inter', Arial, Helvetica, sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.5;
+}
+
+h1, h2, h3, .display {
+  font-family: 'Fraunces', Georgia, 'Times New Roman', serif;
+  font-weight: 600;
+}
+
+a { color: inherit; }
+button, input, select, textarea { font-family: inherit; }
+img { max-width: 100%; }
+
+/* =========================================================
+   NAVIGATION  (white sticky header, like the prototype)
+   ========================================================= */
+
+nav {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  background: var(--card);
+  border-bottom: 1px solid var(--border);
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 14px 6%;
+}
+
+.logo {
+  display: flex;
+  align-items: center;
+  font-family: 'Fraunces', Georgia, serif;
+  font-weight: 700;
+  font-size: 22px;
+  color: var(--navy);
+  text-decoration: none;
+}
+
+.logo span { color: var(--green); }
+.logo svg  { flex-shrink: 0; margin-right: 10px; }
+
+nav ul {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 22px;
+}
+
+nav ul li { margin: 0; }
+
+nav ul li a {
+  color: var(--navy-soft);
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+nav ul li a:hover { color: var(--navy); }
+
+/* Login / Sign up buttons in the nav */
+nav ul li a.nav-btn {
+  display: inline-block;
+  padding: 10px 18px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 14px;
+}
+nav ul li a.nav-btn.outline {
+  color: var(--navy);
+  border: 1.5px solid var(--navy);
+}
+nav ul li a.nav-btn.outline:hover { background: var(--navy); color: #fff; }
+nav ul li a.nav-btn.green {
+  background: var(--green);
+  color: #fff;
+  border: 1.5px solid var(--green);
+}
+nav ul li a.nav-btn.green:hover { background: var(--green-dark); border-color: var(--green-dark); color: #fff; }
+
+/* =========================================================
+   BUTTONS
+   ========================================================= */
+
+.primary-btn,
+.green-btn,
+.pill-btn {
+  color: #fff;
+  border: none;
+  border-radius: 999px;
+  padding: 12px 22px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background .15s, transform .15s;
+}
+.primary-btn, .pill-btn { background: var(--navy); }
+.primary-btn:hover, .pill-btn:hover { background: var(--navy-dark); }
+.green-btn, .pill-btn.green { background: var(--green); }
+.green-btn:hover, .pill-btn.green:hover { background: var(--green-dark); }
+.pill-btn.outline { background: transparent; color: var(--navy); border: 1.5px solid var(--navy); }
+
+/* =========================================================
+   FORM FIELDS
+   ========================================================= */
+
+input, select, textarea {
+  width: 100%;
+  padding: 11px 13px;
+  font-size: 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: #fff;
+  color: var(--text);
+  outline: none;
+}
+
+input:focus, select:focus, textarea:focus { border-color: var(--green); }
+
+input[type="checkbox"], input[type="radio"] { width: auto; accent-color: var(--green); }
+
+label {
+  display: block;
+  font-size: 12px;
+  font-weight: 700;
+  color: var(--navy-soft);
+  margin-bottom: 6px;
+}
+
+/* =========================================================
+   CONTAINERS, CARDS, BADGES (shared helpers)
+   ========================================================= */
+
+.container { width: 90%; max-width: 1180px; margin: auto; }
+
+.card {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden;
+  transition: transform .15s, box-shadow .15s;
+}
+.card:hover { transform: translateY(-3px); box-shadow: var(--shadow); }
+
+.form-group { margin-bottom: 16px; }
+
+.form-card {
+  background: var(--card);
+  width: 100%;
+  max-width: 460px;
+  margin: 60px auto;
+  padding: 36px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  box-shadow: 0 20px 50px rgba(15, 42, 92, 0.08);
+}
+
+.badge {
+  display: inline-block;
+  background: var(--bg);
+  border: 1px solid var(--border);
+  color: var(--navy-soft);
+  padding: 3px 9px;
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.price { color: var(--text); font-size: 20px; font-weight: 700; margin: 10px 0; }
+
+.page-title    { font-size: 38px; margin-bottom: 12px; color: var(--navy); }
+.page-subtitle { color: var(--muted); font-size: 16px; }
+
+.property-image { width: 100%; height: 230px; object-fit: cover; }
+.loading { text-align: center; padding: 60px; color: var(--muted); font-size: 16px; }
+
+/* =========================================================
+   FOOTER
+   ========================================================= */
+
+footer {
+  background: var(--navy-dark);
+  color: #9FB0CE;
+  text-align: center;
+  padding: 34px 20px;
+  margin-top: 60px;
+  font-size: 13px;
+}
+footer h2 { color: #fff; margin-bottom: 6px; font-size: 22px; }
+footer p  { color: #9FB0CE; font-size: 13px; }
+
+/* =========================================================
+   MOBILE
+   ========================================================= */
+
+@media (max-width: 768px) {
+  nav { flex-direction: column; gap: 12px; padding: 14px 5%; position: static; }
+  nav ul { gap: 14px; flex-wrap: wrap; justify-content: center; }
+  .page-title { font-size: 30px; }
+  .form-card { margin: 30px auto; padding: 25px; }
+}
+
+/* =========================================================
+   PAGE BANNERS  (About, Contact, FAQ, Listings, Payment ...)
+   Same navy gradient + green glow as the prototype hero
+   ========================================================= */
+
+.banner,
+.header,
+.page-header {
+  background: linear-gradient(160deg, var(--navy) 0%, var(--navy-dark) 65%) !important;
+  color: #fff;
+  position: relative;
+  overflow: hidden;
+}
+.banner::before,
+.header::before,
+.page-header::before {
+  content: "";
+  position: absolute;
+  right: -80px;
+  top: -80px;
+  width: 300px;
+  height: 300px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(52, 199, 89, 0.25), transparent 70%);
+  pointer-events: none;
+}
+.banner > *, .header > *, .page-header > * { position: relative; }
+.banner h1, .header h1, .page-header h1 { color: #fff; }
+.banner p, .header p, .page-header p { color: #C7D0E3; }
+
+/* Keep overlapping search cards above the banner */
+.search { position: relative; z-index: 2; }
+
+/* =========================================================
+   ACCESS GUARD: hide protected pages until login is checked
+   ========================================================= */
+body[data-require]:not(.auth-ready) > *:not(#guard-notice) { visibility: hidden; }
+#guard-notice {
+  position: fixed; top: 40%; left: 50%; transform: translate(-50%, -50%);
+  width: min(90%, 460px); background: #fff; border: 1px solid var(--border);
+  border-radius: 16px; padding: 26px; text-align: center; color: var(--muted);
+  box-shadow: var(--shadow); z-index: 999; font-size: 15px; line-height: 1.6;
+}
+#guard-notice.error { color: var(--danger); border-color: var(--danger); }
+#guard-notice a { color: var(--green); font-weight: 700; }
+body.auth-ready #guard-notice { display: none; }
+
+footer a { color: #C7D0E3; text-decoration: underline; }
+footer a:hover { color: #fff; }
