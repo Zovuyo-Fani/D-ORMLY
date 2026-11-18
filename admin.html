@@ -1,0 +1,343 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex">
+<title>Dormly | Admin: landlord verification</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+.header{background:var(--primary);color:white;padding:34px 40px;text-align:center;}
+.header h1{font-size:34px;margin-bottom:8px;}
+.wrap{max-width:900px;margin:28px auto;padding:0 20px;}
+.tabs{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:18px;}
+.tab{border:1.5px solid var(--navy);background:#fff;color:var(--navy);padding:8px 16px;border-radius:999px;font-weight:600;font-size:14px;cursor:pointer;}
+.tab.on{background:var(--navy);color:#fff;}
+.req{background:#fff;border:1px solid var(--border);border-radius:16px;padding:18px 20px;margin-bottom:14px;box-shadow:0 4px 18px rgba(15,42,92,.06);}
+.req h3{color:var(--navy);margin:0 0 4px;font-size:17px;}
+.req .meta{color:var(--muted);font-size:13px;line-height:1.6;}
+.req .row{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px;align-items:center;}
+.btn{border:1.5px solid var(--navy);background:transparent;color:var(--navy);padding:8px 14px;border-radius:999px;font-weight:600;font-size:13px;cursor:pointer;text-decoration:none;}
+.btn:hover{background:var(--navy);color:#fff;}
+.btn.ok{background:var(--green);border-color:var(--green);color:#fff;}
+.btn.ok:hover{background:var(--green-dark);}
+.btn.no{border-color:var(--danger);color:var(--danger);}
+.btn.no:hover{background:var(--danger);color:#fff;}
+.btn:disabled{opacity:.5;cursor:default;}
+.reason{width:100%;margin-top:10px;padding:10px;border:1px solid var(--border);border-radius:12px;font:inherit;font-size:14px;box-sizing:border-box;}
+.pill{display:inline-block;border-radius:999px;padding:2px 10px;font-size:11px;font-weight:700;margin-left:6px;}
+.pill.pending{background:var(--warn-tint);color:var(--warn-text);}
+.pill.approved{background:var(--green-tint);color:var(--green);}
+.pill.rejected{background:var(--danger-tint);color:var(--danger);}
+.note{color:var(--muted);text-align:center;margin:30px 0;}
+.err{background:var(--danger-tint);color:var(--danger);border-radius:12px;padding:14px 16px;}
+</style>
+</head>
+<body data-require="any">
+<div id="guard-notice">Loading your account...</div>
+
+<nav>
+
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+</div>
+
+<ul>
+
+<li><a href="index.html">Home</a></li>
+<li><a href="listings.html">Listings</a></li>
+<li><a href="admin.html">Admin</a></li>
+<li><a href="#" onclick="logout()">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<section class="header">
+<h1>Landlord verification</h1>
+<p>Review each landlord's ID and accreditation letter before they can list properties.</p>
+</section>
+
+<div class="wrap">
+<div class="tabs" id="tabs">
+<button class="tab on" data-status="pending">Pending</button>
+<button class="tab" data-status="approved">Approved</button>
+<button class="tab" data-status="rejected">Rejected</button>
+<button class="tab" data-status="payments">Payments to check</button>
+</div>
+<div id="list"><p class="note">Loading...</p></div>
+</div>
+
+<footer>
+
+<h2>Dormly</h2>
+
+<br>
+
+<p>Safe • Affordable • Verified Student Accommodation</p>
+
+<br>
+
+<p>© 2026 Dormly. All Rights Reserved.</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module">
+// Admin access is decided by firestore.rules: only a user whose ID exists in the
+// "admins" collection can read other landlords' verification records. Anyone else
+// just gets "permission denied" here.
+import { auth, db } from "./js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { collection, query, where, getDocs, getDoc, doc, writeBatch, deleteField, serverTimestamp }
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
+import { getApp } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-app.js";
+import { getStorage, ref, getDownloadURL }
+    from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
+import { accreditorLabel } from "./js/verification.js";
+import { money } from "./js/pricing.js";
+
+const list = document.getElementById("list");
+const tabs = document.querySelectorAll(".tab");
+const storage = getStorage(getApp());
+let me = null;
+let current = "pending";
+
+function esc(value) {
+    const div = document.createElement("div");
+    div.textContent = value == null ? "" : String(value);
+    return div.innerHTML;
+}
+
+function when(ts) {
+    try { return ts && ts.toDate ? ts.toDate().toLocaleString() : ""; } catch (e) { return ""; }
+}
+
+async function openDoc(path) {
+    // Open the tab straight away (a popup blocker allows this inside a click), then point it at the file.
+    const tab = window.open("", "_blank");
+    try {
+        const url = await getDownloadURL(ref(storage, path));
+        if (tab) tab.location.href = url; else window.location.href = url;
+    } catch (error) {
+        if (tab) tab.close();
+        console.error(error);
+        alert("Could not open the file: " + (error.code || error.message));
+    }
+}
+
+async function getDrafts(landlordId) {
+    const snap = await getDocs(query(collection(db, "propertyDrafts"), where("ownerId", "==", landlordId)));
+    const drafts = [];
+    snap.forEach((d) => drafts.push({ id: d.id, data: d.data() }));
+    return drafts;
+}
+
+async function decide(item, status, reason, card) {
+    const buttons = card.querySelectorAll("button");
+    buttons.forEach((b) => { b.disabled = true; });
+    try {
+        // One all-or-nothing save: the decision, and (on approval) every draft the
+        // landlord prepared while waiting is published and removed from drafts.
+        const batch = writeBatch(db);
+        batch.update(doc(db, "landlordVerifications", item.id), {
+            status: status,
+            reviewedBy: me.uid,
+            reviewedAt: serverTimestamp(),
+            rejectionReason: status === "rejected" ? reason : deleteField()
+        });
+        if (status === "approved") {
+            const drafts = await getDrafts(item.id);
+            drafts.slice(0, 240).forEach((d) => {
+                batch.set(doc(db, "properties", d.id), { ...d.data, ownerId: item.id, createdAt: serverTimestamp() });
+                batch.delete(doc(db, "propertyDrafts", d.id));
+            });
+        }
+        await batch.commit();
+        await load(current);
+    } catch (error) {
+        console.error(error);
+        buttons.forEach((b) => { b.disabled = false; });
+        alert("Could not save the decision: " + (error.code || error.message));
+    }
+}
+
+function render(items) {
+    if (!items.length) {
+        list.innerHTML = '<p class="note">Nothing here.</p>';
+        return;
+    }
+    list.innerHTML = "";
+    items.forEach((v) => {
+        const card = document.createElement("div");
+        card.className = "req";
+        card.innerHTML = `
+            <h3>${esc(v.landlordName || "(no name)")} <span class="pill ${esc(v.status)}">${esc(v.status)}</span></h3>
+            <div class="meta">
+                ${esc(v.landlordEmail)}<br>
+                Accredited by: <b>${esc(accreditorLabel(v.accreditor))}</b>
+                ${v.accreditationNumber ? " · Ref: <b>" + esc(v.accreditationNumber) + "</b>" : ""}<br>
+                Submitted: ${esc(when(v.submittedAt))}
+                ${v.reviewedAt ? "<br>Reviewed: " + esc(when(v.reviewedAt)) : ""}
+                ${v.status === "rejected" && v.rejectionReason ? "<br>Reason given: " + esc(v.rejectionReason) : ""}
+                ${v.status !== "approved" ? '<br><span class="draftcount">Checking drafts...</span>' : ""}
+            </div>
+            <div class="row">
+                <button class="btn" data-open="id">View ID</button>
+                <button class="btn" data-open="letter">View accreditation letter</button>
+                ${v.status !== "approved" ? '<button class="btn ok" data-act="approve">Approve</button>' : ""}
+                ${v.status !== "rejected" ? '<button class="btn no" data-act="reject">Reject...</button>' : ""}
+            </div>
+            <div class="reject-box" style="display:none">
+                <textarea class="reason" rows="2" maxlength="300" placeholder="Tell the landlord what to fix (they will see this), e.g. 'Letter has expired' or 'ID photo is unreadable'"></textarea>
+                <div class="row"><button class="btn no" data-act="confirm-reject">Confirm rejection</button></div>
+            </div>`;
+
+        card.querySelector('[data-open="id"]').addEventListener("click", () => openDoc(v.idDocPath));
+        card.querySelector('[data-open="letter"]').addEventListener("click", () => openDoc(v.letterPath));
+
+        let draftCount = 0;
+        const countEl = card.querySelector(".draftcount");
+        if (countEl) getDrafts(v.id).then((d) => {
+            draftCount = d.length;
+            countEl.textContent = d.length
+                ? d.length + " draft listing" + (d.length === 1 ? "" : "s") + " will go live when you approve"
+                : "No draft listings yet";
+        }).catch(() => { countEl.textContent = ""; });
+
+        const approve = card.querySelector('[data-act="approve"]');
+        if (approve) approve.addEventListener("click", () => {
+            const extra = draftCount ? " Their " + draftCount + " draft listing" + (draftCount === 1 ? "" : "s") + " will go live immediately." : "";
+            if (confirm("Approve " + (v.landlordName || v.landlordEmail) + "? They will be able to list properties." + extra)) {
+                decide(v, "approved", "", card);
+            }
+        });
+
+        const reject = card.querySelector('[data-act="reject"]');
+        const box = card.querySelector(".reject-box");
+        if (reject) reject.addEventListener("click", () => { box.style.display = "block"; box.querySelector("textarea").focus(); });
+
+        card.querySelector('[data-act="confirm-reject"]').addEventListener("click", () => {
+            const reason = box.querySelector("textarea").value.trim();
+            if (!reason) { alert("Please tell the landlord why, so they know what to fix."); return; }
+            decide(v, "rejected", reason, card);
+        });
+
+        list.appendChild(card);
+    });
+}
+
+// ---------- payments: confirm a student's proof of payment ----------
+async function decidePayment(b, submission, confirmed, reason, card) {
+    const buttons = card.querySelectorAll("button");
+    buttons.forEach((x) => { x.disabled = true; });
+    try {
+        const batch = writeBatch(db);
+        batch.update(doc(db, "bookings", b.id), {
+            status: confirmed ? "confirmed" : "awaiting_payment",
+            reviewedBy: me.uid,
+            reviewedAt: serverTimestamp(),
+            updatedAt: serverTimestamp()
+        });
+        if (submission) {
+            batch.update(doc(db, "paymentSubmissions", b.paymentSubmissionId), {
+                status: confirmed ? "approved" : "rejected",
+                reviewedBy: me.uid,
+                reviewedAt: serverTimestamp(),
+                rejectionReason: confirmed ? deleteField() : reason
+            });
+        }
+        await batch.commit();
+        await load(current);
+    } catch (error) {
+        console.error(error);
+        buttons.forEach((x) => { x.disabled = false; });
+        alert("Could not save the decision: " + (error.code || error.message));
+    }
+}
+
+async function loadPayments() {
+    const snap = await getDocs(query(collection(db, "bookings"), where("status", "==", "payment_submitted")));
+    const items = [];
+    snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
+    items.sort((a, b) => (a.updatedAt && b.updatedAt ? a.updatedAt.toMillis() - b.updatedAt.toMillis() : 0));
+
+    if (!items.length) { list.innerHTML = '<p class="note">No payments waiting to be checked.</p>'; return; }
+    list.innerHTML = "";
+
+    for (const b of items) {
+        let submission = null;
+        try {
+            const s = await getDoc(doc(db, "paymentSubmissions", b.paymentSubmissionId));
+            if (s.exists()) submission = s.data();
+        } catch (e) { console.error(e); }
+
+        const card = document.createElement("div");
+        card.className = "req";
+        card.innerHTML = `
+            <h3>${esc(b.studentName)} <span class="pill pending">payment submitted</span></h3>
+            <div class="meta">
+                ${esc(b.studentEmail)}<br>
+                Property: <b>${esc(b.propertyName)}</b> · Move-in: ${esc(b.moveInDate || "not given")}<br>
+                Rent R${esc(money(b.monthlyRent))} · Commission R${esc(money(b.commissionAmount))}
+                ${b.bookingFeeAmount > 0 ? " · Booking fee R" + esc(money(b.bookingFeeAmount)) : ""}<br>
+                <b>Check that R${esc(money(b.amountDue))} arrived in the bank account</b>
+                ${submission ? " with reference <b>" + esc(submission.paymentReference) + "</b>" : ""}
+            </div>
+            <div class="row">
+                ${submission && submission.proofUrl ? '<a class="btn" target="_blank" rel="noopener" href="' + esc(submission.proofUrl) + '">View proof of payment</a>' : ""}
+                <button class="btn ok" data-act="confirm">Confirm payment received</button>
+                <button class="btn no" data-act="reject">Reject...</button>
+            </div>
+            <div class="reject-box" style="display:none">
+                <textarea class="reason" rows="2" maxlength="300" placeholder="Why was it rejected? (e.g. amount is short, wrong reference)"></textarea>
+                <div class="row"><button class="btn no" data-act="confirm-reject">Confirm rejection</button></div>
+            </div>`;
+        const box = card.querySelector(".reject-box");
+        card.querySelector('[data-act="confirm"]').addEventListener("click", () => {
+            if (confirm("Confirm that R" + money(b.amountDue) + " from " + b.studentName + " has been received?")) {
+                decidePayment(b, submission, true, "", card);
+            }
+        });
+        card.querySelector('[data-act="reject"]').addEventListener("click", () => { box.style.display = "block"; });
+        card.querySelector('[data-act="confirm-reject"]').addEventListener("click", () => {
+            const reason = box.querySelector("textarea").value.trim();
+            if (!reason) { alert("Please say why, so the student knows what to fix."); return; }
+            decidePayment(b, submission, false, reason, card);
+        });
+        list.appendChild(card);
+    }
+}
+
+async function load(status) {
+    current = status;
+    tabs.forEach((t) => t.classList.toggle("on", t.dataset.status === status));
+    list.innerHTML = '<p class="note">Loading...</p>';
+    try {
+        if (status === "payments") { await loadPayments(); return; }
+        const snap = await getDocs(query(collection(db, "landlordVerifications"), where("status", "==", status)));
+        const items = [];
+        snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
+        items.sort((a, b) => (a.submittedAt && b.submittedAt ? a.submittedAt.toMillis() - b.submittedAt.toMillis() : 0));
+        render(items);
+    } catch (error) {
+        console.error(error);
+        list.innerHTML = error.code === "permission-denied"
+            ? '<div class="err"><b>No access.</b> This page is for Dormly administrators. If you should have access, add your user ID to the <code>admins</code> collection in Firestore (see DEPLOY.md).</div>'
+            : '<div class="err">Could not load the requests: ' + esc(error.message) + '</div>';
+    }
+}
+
+tabs.forEach((t) => t.addEventListener("click", () => load(t.dataset.status)));
+
+onAuthStateChanged(auth, (user) => {
+    if (!user) return;
+    me = user;
+    load("pending");
+});
+</script>
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

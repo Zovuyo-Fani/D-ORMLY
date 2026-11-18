@@ -1,0 +1,432 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8">
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0">
+
+    <title>Dormly | Reviews</title>
+
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+* {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            
+        }
+
+        body {
+            background: var(--bg);
+        }
+
+        
+
+        .header {
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 40px;
+        }
+
+        .header h1 {
+            font-size: 40px;
+            margin-bottom: 10px;
+        }
+
+        
+
+        .container {
+            display: flex;
+            justify-content: center;
+            padding: 30px;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+
+        
+
+        .reviews {
+            background: white;
+            width: 500px;
+            min-height: 300px;
+            padding: 25px;
+            border-radius:16px;
+            box-shadow:0 4px 18px rgba(15,42,92,.08);
+        }
+
+        .reviews h2 {
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+
+        
+
+        .no-reviews {
+            text-align: center;
+            padding: 60px 20px;
+            color: var(--muted);
+        }
+
+        .no-reviews .icon {
+            font-size: 50px;
+            margin-bottom: 15px;
+        }
+
+        .no-reviews h3 {
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 22px;
+        }
+
+        .no-reviews p {
+            line-height: 1.6;
+        }
+
+        
+
+        .form-box {
+            background: white;
+            width: 400px;
+            padding: 25px;
+            border-radius:16px;
+            box-shadow:0 4px 18px rgba(15,42,92,.08);
+        }
+
+        .form-box h2 {
+            color: var(--primary);
+            margin-bottom: 10px;
+        }
+
+        .form-box > p {
+            color: var(--muted);
+            margin-bottom: 15px;
+            line-height: 1.5;
+        }
+
+        label {
+            display: block;
+            margin-top: 15px;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        input,
+        textarea,
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius:16px;
+            font-size: 16px;
+        }
+
+        input:focus,
+        textarea:focus,
+        select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        textarea {
+            height: 100px;
+            resize: vertical;
+        }
+
+        button {
+            width: 100%;
+            margin-top: 20px;
+            padding: 14px;
+            background: var(--primary);
+            color: white;
+            border: none;
+            font-size: 16px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius:16px;
+        }
+
+        button:hover {
+            background: var(--primary-dark);
+        }
+
+        
+
+        #reviewMessage {
+            margin-top: 15px;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        
+
+        @media(max-width: 900px) {
+
+            .container {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .reviews,
+            .form-box {
+                width: 95%;
+            }
+
+        }
+</style>
+
+</head>
+
+
+<body>
+
+
+    <!-- ===============================
+         NAVIGATION
+    =============================== -->
+
+    <nav>
+
+        <div class="logo">
+            <svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+        </div>
+
+
+        <ul>
+
+            <li>
+                <a href="index.html">
+                    Home
+                </a>
+            </li>
+
+
+            <li>
+                <a href="dashboard.html">
+                    Dashboard
+                </a>
+            </li>
+
+
+            <li>
+                <a href="listings.html">
+                    Listings
+                </a>
+            </li>
+
+
+            <li>
+                <a href="messages.html">
+                    Messages
+                </a>
+            </li>
+
+
+            <li>
+                <a href="login.html">
+                    Logout
+                </a>
+            </li>
+
+        </ul>
+
+    </nav>
+
+
+
+    <!-- ===============================
+         HEADER
+    =============================== -->
+
+    <section class="header">
+
+        <h1>
+            Reviews & Ratings ⭐
+        </h1>
+
+        <p>
+            See what students say about their accommodation
+        </p>
+
+    </section>
+
+
+
+    <!-- ===============================
+         MAIN CONTENT
+    =============================== -->
+
+    <div class="container">
+
+
+        <!-- ===============================
+             REVIEWS
+        =============================== -->
+
+        <div class="reviews">
+
+            <h2>
+                Student Reviews
+            </h2>
+
+
+            <div class="no-reviews">
+
+                <div class="icon">
+                    ⭐
+                </div>
+
+
+                <h3>
+                    No reviews yet
+                </h3>
+
+
+                <p>
+                    Dormly is waiting for its first student reviews.
+                    Once students submit their experiences,
+                    they will appear here.
+                </p>
+
+            </div>
+
+        </div>
+
+
+
+        <!-- ===============================
+             REVIEW FORM
+        =============================== -->
+
+        <div class="form-box">
+
+            <h2>
+                Leave a Review
+            </h2>
+
+
+            <p>
+                Have you stayed at a Dormly accommodation?
+                Share your experience with other students.
+            </p>
+
+
+            <form id="reviewForm">
+
+
+                <label for="accommodation">
+                    Accommodation
+                </label>
+
+
+                <input
+                    type="text"
+                    id="accommodation"
+                    placeholder="Enter accommodation name"
+                    required
+                >
+
+
+                <label for="rating">
+                    Rating
+                </label>
+
+
+                <select
+                    id="rating"
+                    required
+                >
+
+                    <option value="">
+                        Select rating
+                    </option>
+
+                    <option value="5">
+                        ⭐⭐⭐⭐⭐
+                    </option>
+
+                    <option value="4">
+                        ⭐⭐⭐⭐
+                    </option>
+
+                    <option value="3">
+                        ⭐⭐⭐
+                    </option>
+
+                    <option value="2">
+                        ⭐⭐
+                    </option>
+
+                    <option value="1">
+                        ⭐
+                    </option>
+
+                </select>
+
+
+                <label for="review">
+                    Your Review
+                </label>
+
+
+                <textarea
+                    id="review"
+                    placeholder="Write your experience..."
+                    required
+                ></textarea>
+
+
+                <button
+                    type="submit"
+                >
+                    Submit Review
+                </button>
+
+
+                <div id="reviewMessage"></div>
+
+
+            </form>
+
+        </div>
+
+    </div>
+
+
+
+    <!-- ===============================
+         FOOTER
+    =============================== -->
+
+    <footer>
+
+        <h2>
+            Dormly
+        </h2>
+
+        <br>
+
+        <p>
+            Safe • Affordable • Verified Student Accommodation
+        </p>
+
+        <br>
+
+        <p>
+            © 2026 Dormly. All Rights Reserved.
+        </p>
+
+    <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+
+<script type="module" src="js/guard.js"></script>
+</body>
+
+</html>

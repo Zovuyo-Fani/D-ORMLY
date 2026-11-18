@@ -1,0 +1,68 @@
+rules_version = '2';
+
+// =====================================================
+// DORMLY – Firebase Storage security rules
+// Proof-of-payment files are private to the student who
+// uploaded them (and admins).
+// =====================================================
+service firebase.storage {
+  match /b/{bucket}/o {
+
+    match /paymentProofs/{userId}/{allPaths=**} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == userId ||
+         firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+
+      // Max 5 MB, images or PDF only
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/.*|application/pdf');
+
+      allow update, delete: if false;
+    }
+
+    // Landlord verification documents (ID copy + accreditation letter).
+    // Private: only the landlord who uploaded them and admins can open them.
+    // Files are never overwritten or deleted from the website; a re-submission
+    // after a rejection uploads new files with new names.
+    match /verificationDocs/{userId}/{fileName} {
+      allow read: if request.auth != null &&
+        (request.auth.uid == userId ||
+         firestore.exists(/databases/(default)/documents/admins/$(request.auth.uid)));
+
+      // Max 5 MB, PDF or image only, and only into your own folder as a landlord
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'landlord' &&
+        request.resource.size > 0 &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)|application/pdf');
+
+      allow update, delete: if false;
+    }
+
+    // Property photos: any signed-in person can view them (same as the listings),
+    // but only a landlord with a verified email can add photos (drafts need photos before approval), and only into their own folder.
+    match /propertyImages/{userId}/{propertyId}/{fileName} {
+      allow read: if request.auth != null;
+
+      // Max 5 MB each, JPG / PNG / WebP only
+      allow create: if request.auth != null &&
+        request.auth.uid == userId &&
+        request.auth.token.email_verified == true &&
+        firestore.get(/databases/(default)/documents/users/$(request.auth.uid)).data.role == 'landlord' &&
+        request.resource.size < 5 * 1024 * 1024 &&
+        request.resource.contentType.matches('image/(jpeg|png|webp)');
+
+      allow update: if false;
+
+      // A landlord can remove their own photos
+      allow delete: if request.auth != null && request.auth.uid == userId;
+    }
+
+    match /{allPaths=**} {
+      allow read, write: if false;
+    }
+  }
+}

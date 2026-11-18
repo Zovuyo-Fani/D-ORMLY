@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<title>Dormly | Add Property</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
+<link rel="stylesheet" href="css/style.css">
+<style>
+
+
+.container{
+max-width:900px;
+margin:40px auto;
+background:white;
+padding:40px;
+border-radius:16px;
+box-shadow:0 4px 18px rgba(15,42,92,.08);
+}
+
+.container h1{
+color:var(--primary);
+text-align:center;
+margin-bottom:10px;
+}
+
+.container p{
+text-align:center;
+color: var(--muted);
+margin-bottom:30px;
+}
+
+label{
+display:block;
+font-weight:bold;
+margin-top:20px;
+margin-bottom:8px;
+}
+
+input,
+textarea,
+select{
+
+width:100%;
+padding:12px;
+border:1px solid var(--border);
+border-radius:16px;
+font-size:16px;
+
+}
+
+textarea{
+
+resize:vertical;
+height:120px;
+
+}
+
+.row{
+
+display:grid;
+grid-template-columns:1fr 1fr;
+gap:20px;
+
+}
+
+button{
+
+width:100%;
+padding:15px;
+margin-top:35px;
+background:var(--primary);
+color:white;
+font-size:18px;
+font-weight:bold;
+border:none;
+border-radius:16px;
+cursor:pointer;
+
+}
+
+button:hover{
+
+background:var(--primary-dark);
+
+}
+
+/* Photo picker */
+
+.container p.photo-help{
+
+text-align:left;
+font-size:13px;
+margin:0 0 10px;
+
+}
+
+.photo-count{
+
+margin-top:10px;
+font-size:13px;
+color:var(--muted);
+
+}
+
+.photo-note{
+
+display:none;
+margin-top:10px;
+padding:10px 14px;
+border-radius:12px;
+background:#FFF4E5;
+color:#8A4B00;
+font-size:13px;
+
+}
+
+.photo-grid{
+
+display:grid;
+grid-template-columns:repeat(auto-fill,minmax(110px,1fr));
+gap:12px;
+margin-top:14px;
+
+}
+
+.photo-tile{
+
+position:relative;
+aspect-ratio:4/3;
+border-radius:12px;
+overflow:hidden;
+border:1px solid var(--border);
+background:#f3f5f9;
+
+}
+
+.photo-tile img{
+
+width:100%;
+height:100%;
+object-fit:cover;
+display:block;
+
+}
+
+.photo-cover{
+
+position:absolute;
+left:6px;
+bottom:6px;
+background:var(--green);
+color:#fff;
+font-size:11px;
+font-weight:700;
+padding:3px 8px;
+border-radius:999px;
+
+}
+
+.photo-tile button.photo-action{
+
+width:auto;
+margin:0;
+padding:0;
+border:none;
+cursor:pointer;
+font-weight:700;
+color:#fff;
+background:rgba(15,42,92,.85);
+
+}
+
+.photo-tile button.photo-remove{
+
+position:absolute;
+top:6px;
+right:6px;
+width:26px;
+height:26px;
+border-radius:50%;
+font-size:13px;
+line-height:26px;
+
+}
+
+.photo-tile button.photo-make-cover{
+
+position:absolute;
+left:6px;
+bottom:6px;
+padding:4px 8px;
+border-radius:999px;
+font-size:11px;
+
+}
+
+.photo-tile button.photo-action:hover{
+
+background:var(--primary-dark);
+
+}
+
+.upload-status{
+
+margin-top:14px;
+font-size:14px;
+font-weight:600;
+color:var(--primary);
+text-align:center;
+
+}
+
+button[type=submit]:disabled{
+
+opacity:.65;
+cursor:not-allowed;
+
+}
+
+@media(max-width:700px){
+
+.row{
+
+grid-template-columns:1fr;
+
+}
+
+.container{
+
+margin:20px;
+padding:25px;
+
+}
+
+}
+</style>
+
+</head>
+
+<body onload="protectPage()" data-require="landlord">
+<div id="guard-notice">Loading your account...</div>
+<script>
+setTimeout(function(){
+  var n=document.getElementById('guard-notice');
+  if(n && !document.body.classList.contains('auth-ready')){
+    n.className='error';
+    n.innerHTML='This page could not finish loading.<br><br>Check that the <b>js</b> folder (with <b>guard.js</b> and <b>firebase.js</b>) was uploaded, that you opened the site from its web address (not by double-clicking the file), then <a href="login.html">log in again</a>.';
+  }
+},20000);
+</script>
+
+
+<nav>
+
+<div class="logo">
+<svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
+</div>
+
+<ul>
+
+<li><a href="dashboard.html">Dashboard</a></li>
+<li><a href="listings.html">Listings</a></li>
+<li><a href="profile.html">Profile</a></li>
+<li><a href="#" onclick="logout()">Logout</a></li>
+
+</ul>
+
+</nav>
+
+<div class="container">
+
+<h1>Add New Property</h1>
+
+<p>Upload a verified student accommodation property.</p>
+
+<div id="verifyGate" class="v-card" style="display:none"></div>
+
+<form id="propertyForm" onsubmit="event.preventDefault(); uploadProperty();">
+
+<label>Property Name</label>
+
+<input
+id="propertyName"
+type="text"
+placeholder="Property Name"
+required>
+
+<label>Description</label>
+
+<textarea
+id="description"
+placeholder="Describe the property..."
+required></textarea>
+
+<div class="row">
+
+<div>
+
+<label>Monthly Rent</label>
+
+<input
+id="rent"
+type="number"
+placeholder="Monthly Rent"
+required>
+
+</div>
+
+<div>
+
+<label>University</label>
+
+<input
+id="university"
+type="text"
+placeholder="Nearby University"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Address</label>
+
+<input
+id="address"
+type="text"
+placeholder="Property Address"
+required>
+
+</div>
+
+<div>
+
+<label>Contact Number</label>
+
+<input
+id="phone"
+type="tel"
+placeholder="Contact Number"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Number of Rooms</label>
+
+<input
+id="rooms"
+type="number"
+placeholder="Number of Rooms"
+required>
+
+</div>
+
+<div>
+
+<label>Number of Bathrooms</label>
+
+<input
+id="bathrooms"
+type="number"
+placeholder="Number of Bathrooms"
+required>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Wi-Fi Available</label>
+
+<select id="wifi">
+
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Parking Available</label>
+
+<select id="parking">
+
+<option value="Yes">Yes</option>
+<option value="No">No</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label>Property Status</label>
+
+<select id="status">
+
+<option value="Available">Available</option>
+<option value="Occupied">Occupied</option>
+
+</select>
+
+</div>
+
+<div>
+
+<label>Property Type</label>
+
+<select id="propertyType">
+
+<option value="Apartment">Apartment</option>
+<option value="House">House</option>
+<option value="Student Residence">Student Residence</option>
+<option value="Bachelor Flat">Bachelor Flat</option>
+<option value="Shared Accommodation">Shared Accommodation</option>
+
+</select>
+
+</div>
+
+</div>
+
+<div class="row">
+
+<div>
+
+<label for="depositRequired">Do you want a deposit paid?</label>
+
+<select id="depositRequired" required>
+
+<option value="">Select an option</option>
+<option value="yes">Yes, I want a deposit</option>
+<option value="no">No deposit</option>
+
+</select>
+
+</div>
+
+<div id="depositAmountBox" style="display:none">
+
+<label for="depositAmount">Deposit amount (R)</label>
+
+<input id="depositAmount" type="number" min="1" step="0.01" placeholder="e.g. 3500">
+
+</div>
+
+</div>
+
+<p id="depositHelp" class="photo-help">If you choose "No deposit", students pay a booking fee of 10% of the monthly rent instead. It is calculated for them and added at the end of their booking summary.</p>
+
+<label>Photos</label>
+
+<p class="photo-help">Add up to 10 clear photos (JPG or PNG). The first photo is the cover shown on the listings page. Large photos are shrunk automatically.</p>
+
+<input
+id="photos"
+type="file"
+accept="image/jpeg,image/png"
+multiple>
+
+<div id="photoCount" class="photo-count">No photos selected yet</div>
+
+<div id="photoNote" class="photo-note" role="alert"></div>
+
+<div id="photoPreview" class="photo-grid"></div>
+
+<div id="uploadStatus" class="upload-status" aria-live="polite"></div>
+
+<button type="submit">
+
+Upload Property
+
+</button>
+
+</form>
+
+</div>
+
+<footer>
+
+<h2>Dormly</h2>
+
+<br>
+
+<p>Safe • Affordable • Verified Student Accommodation</p>
+
+<br>
+
+<p>© 2026 Dormly. All Rights Reserved.</p>
+
+<p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
+</footer>
+
+<script type="module" src="js/script.js"></script>
+
+<script type="module" src="js/photo-picker.js"></script>
+
+<script type="module">
+// Deposit question: show the amount box for "Yes", and explain the booking fee for "No".
+import { bookingFeeFor, money } from "./js/pricing.js";
+
+const choice = document.getElementById("depositRequired");
+const amountBox = document.getElementById("depositAmountBox");
+const amountInput = document.getElementById("depositAmount");
+const rentInput = document.getElementById("rent");
+const help = document.getElementById("depositHelp");
+
+function syncDeposit() {
+    const yes = choice.value === "yes";
+    amountBox.style.display = yes ? "block" : "none";
+    amountInput.required = yes;
+    if (yes) {
+        help.textContent = "Students pay this deposit directly to you. Dormly does not collect or hold it.";
+    } else if (choice.value === "no") {
+        const fee = bookingFeeFor(rentInput.value);
+        help.textContent = fee > 0
+            ? "No deposit: students will pay a booking fee of R" + money(fee) + " (10% of the rent), added at the end of their booking summary."
+            : "No deposit: students will pay a booking fee of 10% of the monthly rent, added at the end of their booking summary.";
+    }
+}
+choice.addEventListener("change", syncDeposit);
+rentInput.addEventListener("input", syncDeposit);
+syncDeposit();
+</script>
+<script type="module">
+// Landlords can prepare listings while they wait for approval. Until approved,
+// a listing is saved as a private draft (propertyDrafts) and an admin's approval
+// publishes it. The real enforcement is in firestore.rules.
+import { auth } from "./js/firebase.js";
+import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
+import { getVerification } from "./js/verification.js";
+
+const gate = document.getElementById("verifyGate");
+
+function banner(kind, title, text) {
+    gate.className = "v-card " + kind;
+    gate.innerHTML = "<h3></h3><p></p><p><a style=\"font-weight:700;color:var(--green)\" href=\"landlord-dashboard.html\">Go to my dashboard</a></p>";
+    gate.querySelector("h3").textContent = title;
+    gate.querySelector("p").textContent = text;
+    gate.style.display = "block";
+    const button = document.querySelector("#propertyForm button[type=submit]");
+    if (button) button.textContent = "Save as draft";
+}
+
+onAuthStateChanged(auth, async (user) => {
+    if (!user) return;
+    let v = null;
+    try { v = await getVerification(user.uid); } catch (error) { console.error(error); }
+    if (v && v.status === "approved") { gate.style.display = "none"; return; }
+    if (v && v.status === "pending") {
+        banner("pending", "Verification under review", "You can fill this in now. It is saved as a private draft and goes live automatically once an administrator approves your documents.");
+    } else if (v && v.status === "rejected") {
+        banner("rejected", "Verification not approved", "You can still save drafts, but nothing goes live until your documents are approved. Open your dashboard to see the reason and upload them again.");
+    } else {
+        banner("needs", "Verification needed", "You can save drafts now, but nothing goes live until you upload your ID and accreditation letter on your dashboard and they are approved.");
+    }
+});
+</script>
+<script type="module" src="js/guard.js"></script>
+</body>
+</html>

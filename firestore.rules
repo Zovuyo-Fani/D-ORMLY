@@ -1,0 +1,273 @@
+rules_version = '2';
+
+// =====================================================
+// DORMLY – Firestore security rules
+// Who can read / write what. These rules run on Google's
+// servers, so they protect data even if someone bypasses
+// the website and talks to Firebase directly.
+// =====================================================
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    // ---------- helpers ----------
+    function signedIn() {
+      return request.auth != null;
+    }
+
+    function userDoc(uid) {
+      return /databases/$(database)/documents/users/$(uid);
+    }
+
+    // Admins are added by hand in the Firebase console:
+    // create a document in the "admins" collection whose ID is the admin's user ID.
+    function isAdmin() {
+      return signedIn() &&
+        exists(/databases/$(database)/documents/admins/$(request.auth.uid));
+    }
+
+    function isLandlord() {
+      return signedIn() &&
+        exists(userDoc(request.auth.uid)) &&
+        get(userDoc(request.auth.uid)).data.get('role', 'student') == 'landlord';
+    }
+
+    // A landlord may only publish properties once an admin has approved
+    // their accreditation documents (landlordVerifications/{uid}.status).
+    function isApprovedLandlord() {
+      return isLandlord() &&
+        exists(/databases/$(database)/documents/landlordVerifications/$(request.auth.uid)) &&
+        get(/databases/$(database)/documents/landlordVerifications/$(request.auth.uid)).data.status == 'approved';
+    }
+
+    // ---------- users: each person can only see and edit their own profile ----------
+    match /users/{userId} {
+      allow read: if signedIn() && (request.auth.uid == userId || isAdmin());
+
+      // People can only choose student or landlord when they sign up
+      allow create: if signedIn() && request.auth.uid == userId &&
+        request.resource.data.role in ['student', 'landlord'];
+
+      // Nobody can change their own role afterwards
+      allow update: if signedIn() && request.auth.uid == userId &&
+        request.resource.data.get('role', 'student') == resource.data.get('role', 'student');
+
+      allow delete: if false;
+    }
+
+    // ---------- properties: only signed-in people can browse; only the owner can change ----------
+    match /properties/{propertyId} {
+      allow read: if signedIn();
+
+      // Landlords must have confirmed their email AND been approved by an admin.
+      // An admin can also publish: approving a landlord copies their drafts here.
+      allow create: if (isApprovedLandlord() &&
+        request.auth.token.email_verified == true &&
+        request.resource.data.ownerId == request.auth.uid) || isAdmin();
+
+      allow update: if signedIn() &&
+        ((resource.data.ownerId == request.auth.uid &&
+          request.resource.data.ownerId == resource.data.ownerId) || isAdmin());
+
+      allow delete: if signedIn() &&
+        (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // ---------- property drafts: listings prepared while waiting for approval ----------
+    // Private to the landlord (and admins). Students never see these. When an admin
+    // approves the landlord, the admin page copies each draft into "properties".
+    match /propertyDrafts/{draftId} {
+      allow read: if signedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+
+      allow create: if isLandlord() &&
+        request.auth.token.email_verified == true &&
+        request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if isLandlord() &&
+        resource.data.ownerId == request.auth.uid &&
+        request.resource.data.ownerId == resource.data.ownerId;
+
+      allow delete: if signedIn() && (resource.data.ownerId == request.auth.uid || isAdmin());
+    }
+
+    // ---------- chats: only the people in the conversation ----------
+    match /chats/{chatId} {
+      allow read, update, delete: if signedIn() &&
+        request.auth.uid in resource.data.participants;
+
+      allow create: if signedIn() &&
+        request.auth.uid in request.resource.data.participants;
+
+      match /messages/{messageId} {
+        allow read: if signedIn() &&
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants;
+
+        allow create: if signedIn() &&
+          request.auth.uid in get(/databases/$(database)/documents/chats/$(chatId)).data.participants &&
+          request.resource.data.senderId == request.auth.uid;
+
+        allow update, delete: if false;
+      }
+    }
+
+    // ---------- payment submissions: the student who sent it, and admins ----------
+    match /paymentSubmissions/{submissionId} {
+      allow read: if signedIn() &&
+        (resource.data.studentId == request.auth.uid || isAdmin());
+
+      allow create: if signedIn() &&
+        request.auth.token.email_verified == true &&
+        request.resource.data.studentId == request.auth.uid &&
+        request.resource.data.status == 'pending_review';
+
+      // Only admins can approve / reject a payment
+      allow update, delete: if isAdmin();
+    }
+
+    // ---------- bookings: who wants to book which property ----------
+    // One record per student and property (the document ID is "<studentUid>_<propertyId>").
+    // The student who booked, the owner of that property, and admins can read it.
+    // The owner can see it but never change it. Payment proof is NOT in here:
+    // it stays in paymentSubmissions, which owners cannot read.
+    match /bookings/{bookingId} {
+      function bookingShape() {
+        return request.resource.data.keys().hasOnly([
+          'studentId', 'studentName', 'studentEmail', 'propertyId', 'propertyName', 'ownerId',
+          'moveInDate', 'studyPeriod', 'specialRequests', 'monthlyRent', 'depositOption',
+          'depositAmount', 'commissionAmount', 'bookingFeeAmount', 'amountDue', 'status',
+          'paymentSubmissionId', 'createdAt', 'updatedAt'
+        ]) &&
+        request.resource.data.keys().hasAll([
+          'studentId', 'studentName', 'studentEmail', 'propertyId', 'propertyName', 'ownerId',
+          'moveInDate', 'studyPeriod', 'specialRequests', 'monthlyRent', 'depositOption',
+          'depositAmount', 'commissionAmount', 'bookingFeeAmount', 'amountDue', 'status',
+          'createdAt', 'updatedAt'
+        ]);
+      }
+
+      function validBooking() {
+        return bookingShape() &&
+          request.resource.data.studentId == request.auth.uid &&
+          request.resource.data.studentEmail == request.auth.token.email &&
+          bookingId == request.auth.uid + '_' + request.resource.data.propertyId &&
+          exists(/databases/$(database)/documents/properties/$(request.resource.data.propertyId)) &&
+          get(/databases/$(database)/documents/properties/$(request.resource.data.propertyId)).data.ownerId
+            == request.resource.data.ownerId &&
+          request.resource.data.studentName is string &&
+          request.resource.data.studentName.size() <= 120 &&
+          request.resource.data.moveInDate is string &&
+          request.resource.data.moveInDate.size() <= 10 &&
+          request.resource.data.studyPeriod in ['first_semester', 'full_year', 'not_given'] &&
+          request.resource.data.specialRequests is string &&
+          request.resource.data.specialRequests.size() <= 500 &&
+          request.resource.data.depositOption in ['deposit', 'no_deposit', 'not_set'] &&
+          request.resource.data.createdAt is timestamp &&
+          request.resource.data.updatedAt == request.time;
+      }
+
+      // A student can only mark a booking "payment submitted" if a payment
+      // submission of theirs for this property really exists.
+      function validStatus() {
+        return (request.resource.data.status == 'awaiting_payment' &&
+                !('paymentSubmissionId' in request.resource.data)) ||
+               (request.resource.data.status == 'payment_submitted' &&
+                request.resource.data.get('paymentSubmissionId', '') is string &&
+                exists(/databases/$(database)/documents/paymentSubmissions/$(request.resource.data.paymentSubmissionId)) &&
+                get(/databases/$(database)/documents/paymentSubmissions/$(request.resource.data.paymentSubmissionId)).data.studentId == request.auth.uid &&
+                get(/databases/$(database)/documents/paymentSubmissions/$(request.resource.data.paymentSubmissionId)).data.propertyId == request.resource.data.propertyId);
+      }
+
+      allow read: if signedIn() &&
+        (resource == null ||
+         resource.data.studentId == request.auth.uid ||
+         resource.data.ownerId == request.auth.uid ||
+         isAdmin());
+
+      allow create: if signedIn() &&
+        request.auth.token.email_verified == true &&
+        validBooking() && validStatus();
+
+      allow update: if
+        // the student can change their own booking until it is confirmed,
+        // but cannot take "payment submitted" back
+        (signedIn() &&
+          resource.data.studentId == request.auth.uid &&
+          resource.data.status in ['awaiting_payment', 'payment_submitted'] &&
+          (resource.data.status == 'awaiting_payment' || request.resource.data.status == 'payment_submitted') &&
+          validBooking() && validStatus()) ||
+        // an admin can only change the status
+        (isAdmin() &&
+          request.resource.data.status in ['awaiting_payment', 'payment_submitted', 'confirmed', 'cancelled'] &&
+          request.resource.data.diff(resource.data).affectedKeys()
+            .hasOnly(['status', 'updatedAt', 'reviewedBy', 'reviewedAt']));
+
+      allow delete: if false;
+    }
+
+    // ---------- landlord verification: ID + accreditation letter, reviewed by an admin ----------
+    // One record per landlord (document ID = their user ID).
+    // The landlord can submit it (always as "pending") and re-submit after a
+    // rejection. Only an admin can set approved / rejected, so a landlord can
+    // never approve themselves.
+    match /landlordVerifications/{landlordId} {
+      function ownFields() {
+        return request.resource.data.keys().hasOnly([
+          'landlordId', 'landlordName', 'landlordEmail', 'accreditor',
+          'accreditationNumber', 'idDocPath', 'letterPath', 'status', 'submittedAt'
+        ]) &&
+        request.resource.data.keys().hasAll([
+          'landlordId', 'landlordName', 'landlordEmail', 'accreditor',
+          'idDocPath', 'letterPath', 'status', 'submittedAt'
+        ]);
+      }
+
+      function validSubmission() {
+        return ownFields() &&
+          request.resource.data.landlordId == request.auth.uid &&
+          request.resource.data.landlordEmail == request.auth.token.email &&
+          request.resource.data.status == 'pending' &&
+          request.resource.data.submittedAt == request.time &&
+          request.resource.data.accreditor in ['NSFAS', 'University', 'Other'] &&
+          request.resource.data.get('accreditationNumber', '') is string &&
+          request.resource.data.get('accreditationNumber', '').size() <= 60 &&
+          request.resource.data.landlordName is string &&
+          request.resource.data.landlordName.size() <= 120 &&
+          request.resource.data.idDocPath is string &&
+          request.resource.data.letterPath is string &&
+          request.resource.data.idDocPath.matches('verificationDocs/' + request.auth.uid + '/.+') &&
+          request.resource.data.letterPath.matches('verificationDocs/' + request.auth.uid + '/.+');
+      }
+
+      allow read: if signedIn() && (request.auth.uid == landlordId || isAdmin());
+
+      allow create: if isLandlord() &&
+        request.auth.uid == landlordId &&
+        validSubmission();
+
+      // A landlord can re-submit while rejected (or replace a pending submission),
+      // but never once approved.
+      allow update: if (isLandlord() &&
+          request.auth.uid == landlordId &&
+          resource.data.status in ['pending', 'rejected'] &&
+          validSubmission()) ||
+        // An admin can only decide: the landlord's own details and files stay as submitted.
+        (isAdmin() &&
+          request.resource.data.status in ['approved', 'rejected'] &&
+          request.resource.data.landlordId == resource.data.landlordId &&
+          request.resource.data.idDocPath == resource.data.idDocPath &&
+          request.resource.data.letterPath == resource.data.letterPath &&
+          request.resource.data.reviewedBy == request.auth.uid);
+
+      allow delete: if false;
+    }
+
+    // ---------- admins list: never readable from the website ----------
+    match /admins/{adminId} {
+      allow read, write: if false;
+    }
+
+    // ---------- everything else is closed ----------
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}
