@@ -1,4 +1,4 @@
-import { auth, db, EmailAuthProvider, reauthenticateWithCredential, verifyBeforeUpdateEmail } from "./firebase.js";
+import { auth, db } from "./firebase.js";
 
 import {
     createUserWithEmailAndPassword,
@@ -583,28 +583,4 @@ if (forgotPasswordForm) {
                 "❌ " + error.code + " — " + error.message;
         }
     });
-}
-
-const changeEmailBtn = document.getElementById("changeEmailBtn");
-if (changeEmailBtn) {
-  changeEmailBtn.addEventListener("click", async () => {
-    const auth = getAuth();
-    const user = auth.currentUser;
-    const msg = document.getElementById("changeEmailMsg");
-    const newEmail = document.getElementById("newEmail").value.trim();
-    const password = document.getElementById("currentPassword").value;
-
-    try {
-      const cred = EmailAuthProvider.credential(user.email, password);
-      await reauthenticateWithCredential(user, cred);
-      await verifyBeforeUpdateEmail(user, newEmail);
-      msg.textContent = "Check your new inbox and click the link to confirm. Then sign in again with the new email.";
-    } catch (e) {
-      msg.textContent = e.code === "auth/wrong-password" || e.code === "auth/invalid-credential"
-        ? "Wrong password."
-        : e.code === "auth/email-already-in-use"
-        ? "That email already has an account."
-        : "Couldn't change email: " + e.code;
-    }
-  });
 }
