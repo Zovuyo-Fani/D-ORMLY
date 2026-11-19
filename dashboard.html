@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+ 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+ 
 <title>Dormly | Student Dashboard</title>
-
+ 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <style>
-
-
+ 
+ 
 .header{
 background:var(--primary);
 color:white;
 padding:40px;
 text-align:center;
 }
-
+ 
 .header h1{
 font-size:40px;
 margin-bottom:10px;
 }
-
-
-
+ 
+ 
+ 
 .container{
 display:flex;
 flex-wrap:wrap;
@@ -34,9 +34,9 @@ padding:30px;
 gap:20px;
 justify-content:center;
 }
-
-
-
+ 
+ 
+ 
 .sidebar{
 background:white;
 width:250px;
@@ -45,12 +45,12 @@ border-radius:16px;
 box-shadow:0 4px 18px rgba(15,42,92,.08);
 height:fit-content;
 }
-
+ 
 .sidebar h3{
 color:var(--primary);
 margin-bottom:15px;
 }
-
+ 
 .sidebar a{
 display:block;
 padding:10px;
@@ -60,14 +60,14 @@ color:var(--text);
 border-radius:16px;
 transition:0.3s;
 }
-
+ 
 .sidebar a:hover{
 background:var(--primary);
 color:white;
 }
-
-
-
+ 
+ 
+ 
 .main{
 flex:1;
 min-width:300px;
@@ -76,16 +76,16 @@ padding:20px;
 border-radius:16px;
 box-shadow:0 4px 18px rgba(15,42,92,.08);
 }
-
-
-
+ 
+ 
+ 
 .cards{
 display:flex;
 flex-wrap:wrap;
 gap:20px;
 margin-top:20px;
 }
-
+ 
 .card{
 flex:1;
 min-width:200px;
@@ -95,44 +95,44 @@ border-radius:16px;
 text-align:center;
 transition:0.3s;
 }
-
+ 
 .card:hover{
 transform:translateY(-5px);
 }
-
+ 
 .card h2{
 color:var(--primary);
 margin-bottom:10px;
 }
-
-
-
+ 
+ 
+ 
 .booking{
 margin-top:30px;
 }
-
+ 
 .booking-item{
 background:#f9f9f9;
 padding:15px;
 margin-top:10px;
 border-left:5px solid var(--primary);
 }
-
+ 
 @media(max-width:900px){
-
+ 
 .container{
 flex-direction:column;
 }
-
+ 
 .sidebar{
 width:100%;
 }
-
+ 
 }
 </style>
-
+ 
 </head>
-
+ 
 <body onload="protectPage(); loadDashboard();" data-require="student">
 <div id="guard-notice">Loading your account...</div>
 <script>
@@ -144,109 +144,109 @@ setTimeout(function(){
   }
 },20000);
 </script>
-
-
+ 
+ 
 <nav>
-
+ 
 <div class="logo">
 <svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
 </div>
-
+ 
 <ul>
-
+ 
 <li><a href="index.html">Home</a></li>
 <li><a href="listings.html">Listings</a></li>
 <li><a href="contact.html">Contact</a></li>
 <li><a href="#" onclick="logout()">Logout</a></li>
-
+ 
 </ul>
-
+ 
 </nav>
-
+ 
 <section class="header">
-
+ 
 <h1>Welcome, <span id="userName">Student</span> 👋</h1>
-
+ 
 <p>Your accommodation dashboard</p>
-
+ 
 </section>
-
+ 
 <div class="container">
-
+ 
 <div class="sidebar">
-
+ 
 <h3>Menu</h3>
-
+ 
 <a href="dashboard.html">Dashboard</a>
 <a href="profile.html">My Profile</a>
 <a href="booking.html">New Booking</a>
 <a href="listings.html">Browse Listings</a>
 <a href="messages.html">Messages</a>
 <a href="payment.html">Payments</a>
-
+ 
 </div>
-
+ 
 <div class="main">
-
+ 
 <h2>Overview</h2>
-
+ 
 <div class="cards">
-
+ 
 <div class="card">
 <h2 id="activeBookings">0</h2>
 <p>Active Bookings</p>
 </div>
-
+ 
 <div class="card">
 <h2 id="monthlyRent">--</h2>
 <p>Monthly Rent</p>
 </div>
-
+ 
 <div class="card">
 <h2 id="savedListings">0</h2>
 <p>Saved Listings</p>
 </div>
-
+ 
 <div class="card">
 <h2 id="messageCount">0</h2>
 <p>Messages</p>
 </div>
-
+ 
 </div>
-
+ 
 <div class="booking">
-
+ 
 <h2>Current Booking</h2>
-
+ 
 <div id="bookingInfo">
-
+ 
 <p>No active booking.</p>
-
+ 
 </div>
-
+ 
 </div>
-
+ 
 </div>
-
+ 
 </div>
-
+ 
 <footer>
-
+ 
 <h2>Dormly</h2>
-
+ 
 <br>
-
+ 
 <p>Safe • Affordable • Verified Student Accommodation</p>
-
+ 
 <br>
-
+ 
 <p>© 2026 Dormly. All Rights Reserved.</p>
-
+ 
 <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
 </footer>
-
+ 
 <script type="module" src="js/script.js"></script>
-
+ 
 <script type="module">
 // Fills "Current Booking" from the student's saved bookings.
 import { auth, db } from "./js/firebase.js";
@@ -254,17 +254,19 @@ import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/f
 import { collection, query, where, getDocs }
     from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import { money } from "./js/pricing.js";
-
+ 
 function esc(v) { const d = document.createElement("div"); d.textContent = v == null ? "" : String(v); return d.innerHTML; }
-
+ 
 const LABEL = {
-    awaiting_payment: "Waiting for your payment",
+    requested: "Request sent. Waiting for the owner to accept.",
+    awaiting_payment: "Accepted by the owner! Pay Dormly to secure your room.",
+    declined: "The owner could not accept this request.",
     payment_submitted: "Payment submitted. Dormly is verifying it.",
-    confirmed: "Confirmed",
+    confirmed: "Confirmed. Your room is secured!",
     cancelled: "Cancelled"
 };
 const PERIOD = { first_semester: "First semester", full_year: "Full academic year", not_given: "" };
-
+ 
 onAuthStateChanged(auth, async (user) => {
     if (!user) return;
     try {
@@ -273,15 +275,17 @@ onAuthStateChanged(auth, async (user) => {
         snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
         items.sort((a, b) => (b.createdAt && a.createdAt ? b.createdAt.toMillis() - a.createdAt.toMillis() : 0));
         const live = items.filter((b) => b.status !== "cancelled");
-
+ 
         document.getElementById("activeBookings").textContent = live.length;
         if (!live.length) return;
-
+ 
         document.getElementById("monthlyRent").textContent = "R" + Math.round(live[0].monthlyRent || 0);
         document.getElementById("bookingInfo").innerHTML = live.map((b) => `
             <div class="booking-item">
                 <strong>${esc(b.propertyName)}</strong><br>
                 ${esc(LABEL[b.status] || b.status)}<br>
+                ${b.status === "awaiting_payment" ? '<a href="payment.html?id=' + encodeURIComponent(b.propertyId) + '">Pay now</a><br>' : ""}
+                ${b.declineReason ? "Reason: " + esc(b.declineReason) + "<br>" : ""}
                 Move-in: ${esc(b.moveInDate || "not given")} ${PERIOD[b.studyPeriod] ? "· " + esc(PERIOD[b.studyPeriod]) : ""}<br>
                 ${b.depositOption === "deposit" ? "Deposit to pay the owner: R" + esc(money(b.depositAmount)) + "<br>" : ""}
                 Due to Dormly: R${esc(money(b.amountDue))}
@@ -292,7 +296,7 @@ onAuthStateChanged(auth, async (user) => {
     }
 });
 </script>
-
+ 
 <script type="module" src="js/guard.js"></script>
 </body>
 </html>
