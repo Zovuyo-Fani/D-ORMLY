@@ -15,44 +15,44 @@
 // commission + booking fee. The deposit is NOT part of it; it is arranged
 // directly between the student and the owner.
 // =====================================================
-
-export const COMMISSION_RATE = 0.10;     // Dormly commission, % of the monthly rent
+ 
+export const COMMISSION_RATE = 0;     // Dormly commission, % of the monthly rent
 export const BOOKING_FEE_RATE = 0.10;    // booking fee when the owner takes no deposit
-
+ 
 // Set to true if the booking fee should REPLACE the commission for no-deposit
 // properties (so the student pays one 10% charge instead of two).
 export const BOOKING_FEE_REPLACES_COMMISSION = false;
-
+ 
 export function round2(n) {
     return Math.round((Number(n) || 0) * 100) / 100;
 }
-
+ 
 export function money(n) {
     return Number(n || 0).toLocaleString("en-ZA", {
         minimumFractionDigits: 2,
         maximumFractionDigits: 2
     });
 }
-
+ 
 export function bookingFeeFor(rent) {
-    return round2((Number(rent) || 0) * BOOKING_FEE_RATE);
+    return round2((Number(rent) || 0) * BOOKING_FEE_RATE);   // 10% of the monthly rent, paid by every student
 }
-
+ 
 // property = a document from "properties" (or a draft)
 export function computeCharges(property) {
     const p = property || {};
     const rent = Number(p.price ?? p.rent ?? 0) || 0;
-
+ 
     let depositRequired = null;                 // null = owner has not answered yet
     if (p.depositRequired === true) depositRequired = true;
     if (p.depositRequired === false) depositRequired = false;
-
+ 
     const depositAmount = depositRequired === true ? round2(p.depositAmount) : 0;
-    const bookingFee = depositRequired === false ? bookingFeeFor(rent) : 0;
-
-    let commission = round2(rent * COMMISSION_RATE);
+    const bookingFee = bookingFeeFor(rent);
+ 
+    let commission = 0;
     if (depositRequired === false && BOOKING_FEE_REPLACES_COMMISSION) commission = 0;
-
+ 
     return {
         rent: round2(rent),
         depositRequired,
@@ -62,11 +62,12 @@ export function computeCharges(property) {
         totalDueToDormly: round2(commission + bookingFee)
     };
 }
-
+ 
 // One short sentence describing the owner's deposit choice
 export function depositSummary(property) {
     const c = computeCharges(property);
     if (c.depositRequired === true) return "Deposit: R" + money(c.depositAmount);
-    if (c.depositRequired === false) return "No deposit (R" + money(c.bookingFee) + " booking fee applies)";
+    if (c.depositRequired === false) return "No deposit";
     return "Deposit not set";
 }
+ 
