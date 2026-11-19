@@ -1,32 +1,32 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-
+ 
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
+ 
 <title>Dormly | Landlord Dashboard</title>
-
+ 
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700&family=Inter:wght@400;500;600;700;800&display=swap">
 <link rel="stylesheet" href="css/style.css">
 <style>
-
-
+ 
+ 
 .header{
 background:var(--primary);
 color:white;
 padding:40px;
 text-align:center;
 }
-
+ 
 .header h1{
 font-size:40px;
 margin-bottom:10px;
 }
-
-
-
+ 
+ 
+ 
 .container{
 display:flex;
 flex-wrap:wrap;
@@ -34,9 +34,9 @@ padding:30px;
 gap:20px;
 justify-content:center;
 }
-
-
-
+ 
+ 
+ 
 .sidebar{
 background:white;
 width:250px;
@@ -45,12 +45,12 @@ border-radius:16px;
 box-shadow:0 4px 18px rgba(15,42,92,.08);
 height:fit-content;
 }
-
+ 
 .sidebar h3{
 color:var(--primary);
 margin-bottom:15px;
 }
-
+ 
 .sidebar a{
 display:block;
 padding:10px;
@@ -60,14 +60,14 @@ color:var(--text);
 border-radius:16px;
 transition:0.3s;
 }
-
+ 
 .sidebar a:hover{
 background:var(--primary);
 color:white;
 }
-
-
-
+ 
+ 
+ 
 .main{
 flex:1;
 min-width:300px;
@@ -76,16 +76,16 @@ padding:20px;
 border-radius:16px;
 box-shadow:0 4px 18px rgba(15,42,92,.08);
 }
-
-
-
+ 
+ 
+ 
 .cards{
 display:flex;
 flex-wrap:wrap;
 gap:20px;
 margin-top:20px;
 }
-
+ 
 .card{
 flex:1;
 min-width:200px;
@@ -95,41 +95,41 @@ border-radius:16px;
 text-align:center;
 transition:0.3s;
 }
-
+ 
 .card:hover{
 transform:translateY(-5px);
 }
-
+ 
 .card h2{
 color:var(--primary);
 margin-bottom:10px;
 }
-
-
-
+ 
+ 
+ 
 .booking{
 margin-top:30px;
 }
-
+ 
 .booking-item{
 background:#f9f9f9;
 padding:15px;
 margin-top:10px;
 border-left:5px solid var(--primary);
 }
-
+ 
 @media(max-width:900px){
-
+ 
 .container{
 flex-direction:column;
 }
-
+ 
 .sidebar{
 width:100%;
 }
-
+ 
 }
-
+ 
 .prop-item{display:flex;justify-content:space-between;align-items:center;gap:14px;flex-wrap:wrap;background:var(--bg);border:1px solid var(--border);border-radius:14px;padding:14px 18px;margin-top:12px;}
 .prop-item b{color:var(--navy);display:block;font-size:15px;}
 .prop-item span{color:var(--muted);font-size:13px;}
@@ -153,9 +153,9 @@ width:100%;
 .dep-edit input{width:130px;}
 .dep-warn{color:var(--warn-text) !important;font-weight:600;}
 </style>
-
+ 
 </head>
-
+ 
 <body data-require="landlord">
 <div id="guard-notice">Loading your account...</div>
 <script>
@@ -167,32 +167,32 @@ setTimeout(function(){
   }
 },20000);
 </script>
-
-
+ 
+ 
 <nav>
-
+ 
 <div class="logo">
 <svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
 </div>
-
+ 
 <ul>
-
+ 
 <li><a href="index.html">Home</a></li>
 <li><a href="listings.html">Listings</a></li>
 <li><a href="contact.html">Contact</a></li>
 <li><a href="#" onclick="logout()">Logout</a></li>
-
+ 
 </ul>
-
+ 
 </nav>
-
+ 
 <section class="header">
 <h1>Welcome, <span id="userName">Landlord</span> 👋</h1>
 <p>Manage your student accommodation listings</p>
 </section>
-
+ 
 <div class="container">
-
+ 
 <div class="sidebar">
 <h3>Menu</h3>
 <a href="landlord-dashboard.html" class="active">Dashboard</a>
@@ -202,25 +202,25 @@ setTimeout(function(){
 <a href="messages.html">Messages</a>
 <a href="listings.html">View All Listings</a>
 </div>
-
+ 
 <div class="main">
 <div id="verifyCard" class="v-card"><p style="color:var(--muted)">Checking your verification status...</p></div>
-
+ 
 <h2>Overview</h2>
-
+ 
 <div class="cards">
 <div class="card"><h2 id="totalProps">0</h2><p>Properties Listed</p></div>
 <div class="card"><h2 id="availableProps">0</h2><p>Available</p></div>
 <div class="card"><h2 id="avgRent">--</h2><p>Average Rent</p></div>
 <div class="card"><h2 id="requestCount">0</h2><p>Booking Requests</p></div>
 </div>
-
+ 
 <div class="booking" id="requestsSection">
 <h2>Booking Requests</h2>
 <p style="color:var(--muted);font-size:13px;margin-top:4px">Students who want to book your accommodation. Contact them by email to arrange the move-in.</p>
 <div id="requestList"><p style="margin-top:14px;color:var(--muted)">Loading booking requests...</p></div>
 </div>
-
+ 
 <div class="booking">
 <h2>My Properties</h2>
 <a class="add-btn" href="add-property.html">+ Add a property</a>
@@ -233,66 +233,67 @@ setTimeout(function(){
 <div id="propertyList"><p style="margin-top:14px;color:var(--muted)">Loading your properties...</p></div>
 </div>
 </div>
-
+ 
 </div>
-
+ 
 <footer>
-
+ 
 <h2>Dormly</h2>
-
+ 
 <br>
-
+ 
 <p>Safe • Affordable • Verified Student Accommodation</p>
-
+ 
 <br>
-
+ 
 <p>© 2026 Dormly. All Rights Reserved.</p>
-
+ 
 <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
 </footer>
-
+ 
 <script type="module">
 import { auth, db } from "./js/firebase.js";
 import { onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.16.0/firebase-auth.js";
-import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc }
+import { collection, query, where, getDocs, deleteDoc, doc, getDoc, updateDoc, serverTimestamp }
     from "https://www.gstatic.com/firebasejs/12.16.0/firebase-firestore.js";
 import { computeCharges, depositSummary, money } from "./js/pricing.js";
 import {
     ACCEPT_ATTR, ACCREDITORS, accreditorLabel, getVerification,
     submitVerification, friendlyVerificationError
 } from "./js/verification.js";
-
+ 
 const list = document.getElementById("propertyList");
-
+ 
 function esc(value) {
     const div = document.createElement("div");
     div.textContent = value == null ? "" : String(value);
     return div.innerHTML;
 }
-
+ 
 async function loadProperties(user) {
     try {
         const snap = await getDocs(query(collection(db, "properties"), where("ownerId", "==", user.uid)));
         const props = [];
         snap.forEach((d) => props.push({ id: d.id, ...d.data() }));
-
+ 
         document.getElementById("totalProps").textContent = props.length;
         document.getElementById("availableProps").textContent =
             props.filter((p) => String(p.status || "").toLowerCase() === "available").length;
         document.getElementById("avgRent").textContent = props.length
             ? "R" + Math.round(props.reduce((t, p) => t + Number(p.rent || 0), 0) / props.length)
             : "--";
-
+ 
         if (!props.length) {
             list.innerHTML = '<p style="margin-top:14px;color:var(--muted)">You have not listed any properties yet. Click "Add a property" to get started.</p>';
             return;
         }
-
+ 
         list.innerHTML = props.map((p) => `
             <div class="prop-item">
                 <div>
                     <b>${esc(p.propertyName)} <span class="status-pill">${esc(p.status || "Listed")}</span></b>
                     <span class="ln">R${esc(p.rent)} / month · ${esc(p.university)} · ${esc(p.address)}</span>
+                    <span class="ln">Rooms available: <b style="display:inline;font-size:13px">${Math.max(0, (Number(p.rooms) || 0) - (Number(p.roomsOccupied) || 0))} of ${Number(p.rooms) || 0}</b> <button class="small-btn" data-room="${esc(p.id)}" data-delta="1" data-total="${Number(p.rooms) || 0}" data-occ="${Number(p.roomsOccupied) || 0}">+ Occupied</button> <button class="small-btn" data-room="${esc(p.id)}" data-delta="-1" data-total="${Number(p.rooms) || 0}" data-occ="${Number(p.roomsOccupied) || 0}">&minus; Occupied</button></span>
                     <span class="ln${computeCharges(p).depositRequired === null ? " dep-warn" : ""}">${esc(depositSummary(p))}${computeCharges(p).depositRequired === null ? " · please tell us if you want a deposit" : ""}</span>
                 </div>
                 <div class="prop-actions">
@@ -311,14 +312,14 @@ async function loadProperties(user) {
                     <span class="ln" data-dep-msg></span>
                 </div>
             </div>`).join("");
-
+ 
         list.querySelectorAll("[data-deposit]").forEach((btn) => {
             btn.addEventListener("click", () => {
                 const box = document.getElementById("dep-" + btn.dataset.deposit);
                 box.style.display = box.style.display === "flex" ? "none" : "flex";
             });
         });
-
+ 
         list.querySelectorAll(".dep-edit").forEach((box) => {
             const choice = box.querySelector("[data-choice]");
             const amount = box.querySelector("[data-amount]");
@@ -345,7 +346,7 @@ async function loadProperties(user) {
                 }
             });
         });
-
+ 
         list.querySelectorAll("[data-delete]").forEach((btn) => {
             btn.addEventListener("click", async () => {
                 if (!confirm("Delete this property? This cannot be undone.")) return;
@@ -363,15 +364,17 @@ async function loadProperties(user) {
         list.innerHTML = '<p style="color:var(--danger)">Could not load your properties. Please refresh the page.</p>';
     }
 }
-
+ 
 const STATUS_LABEL = {
-    awaiting_payment: ["Awaiting student payment", "awaiting"],
+    requested: ["New request: please accept or decline", "awaiting"],
+    awaiting_payment: ["Accepted, awaiting student payment", "awaiting"],
+    declined: ["Declined", "cancelled"],
     payment_submitted: ["Payment being verified by Dormly", "submitted"],
     confirmed: ["Confirmed", "confirmed"],
     cancelled: ["Cancelled", "cancelled"]
 };
 const PERIOD_LABEL = { first_semester: "First semester", full_year: "Full academic year", not_given: "Study period not given" };
-
+ 
 function ownerMoneyLine(b) {
     if (b.depositOption === "deposit") {
         return "Deposit R" + money(b.depositAmount) + " (you arrange this directly with the student)";
@@ -381,7 +384,42 @@ function ownerMoneyLine(b) {
     }
     return "";
 }
-
+ 
+document.getElementById("requestList").addEventListener("click", async (e) => {
+    const btn = e.target.closest("[data-accept],[data-decline]");
+    if (!btn) return;
+    const accepting = btn.dataset.accept !== undefined;
+    const reason = accepting ? "" : (prompt("Reason for declining (the student will see this):") || "").trim();
+    if (!accepting && !reason) return;
+    btn.disabled = true;
+    try {
+        const data = { status: accepting ? "awaiting_payment" : "declined", updatedAt: serverTimestamp() };
+        if (!accepting) data.declineReason = reason.slice(0, 200);
+        await updateDoc(doc(db, "bookings", btn.dataset.accept || btn.dataset.decline), data);
+        loadRequests(auth.currentUser);
+    } catch (err) {
+        console.error(err);
+        alert("Could not save: " + (err.code || err.message));
+        btn.disabled = false;
+    }
+});
+ 
+document.addEventListener("click", async (e) => {
+    const b = e.target.closest("[data-room]");
+    if (!b) return;
+    const total = Number(b.dataset.total) || 0;
+    const occ = Math.min(total, Math.max(0, Number(b.dataset.occ) + Number(b.dataset.delta)));
+    b.disabled = true;
+    try {
+        await updateDoc(doc(db, "properties", b.dataset.room), { roomsOccupied: occ, status: total && occ >= total ? "Occupied" : "Available" });
+        loadProperties(auth.currentUser);
+    } catch (err) {
+        console.error(err);
+        alert("Could not save: " + (err.code || err.message));
+        b.disabled = false;
+    }
+});
+ 
 async function loadRequests(user) {
     const box = document.getElementById("requestList");
     try {
@@ -389,14 +427,14 @@ async function loadRequests(user) {
         const items = [];
         snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
         items.sort((a, b) => (b.createdAt && a.createdAt ? b.createdAt.toMillis() - a.createdAt.toMillis() : 0));
-
+ 
         document.getElementById("requestCount").textContent = items.length;
-
+ 
         if (!items.length) {
             box.innerHTML = '<p style="margin-top:14px;color:var(--muted)">No booking requests yet. When a student books one of your properties, they will appear here.</p>';
             return;
         }
-
+ 
         box.innerHTML = items.map((b) => {
             const [label, cls] = STATUS_LABEL[b.status] || [b.status, "awaiting"];
             const email = esc(b.studentEmail);
@@ -409,6 +447,7 @@ async function loadRequests(user) {
                     <span class="ln">Email: <a href="mailto:${email}">${email}</a></span>
                     ${ownerMoneyLine(b) ? `<span class="ln">${esc(ownerMoneyLine(b))}</span>` : ""}
                     ${b.specialRequests ? `<span class="ln">Request: ${esc(b.specialRequests)}</span>` : ""}
+                    ${b.status === "requested" ? `<span class="ln"><button class="small-btn" data-accept="${esc(b.id)}">Accept</button> <button class="small-btn danger" data-decline="${esc(b.id)}">Decline</button></span>` : ""}
                 </div>
             </div>`;
         }).join("");
@@ -417,7 +456,7 @@ async function loadRequests(user) {
         box.innerHTML = '<p style="color:var(--danger)">Could not load booking requests. Please refresh the page.</p>';
     }
 }
-
+ 
 async function loadDrafts(user) {
     const section = document.getElementById("draftSection");
     const box = document.getElementById("draftList");
@@ -453,11 +492,11 @@ async function loadDrafts(user) {
         console.error(error);
     }
 }
-
+ 
 // ---------- verification status card ----------
 const verifyCard = document.getElementById("verifyCard");
 let landlordName = "";
-
+ 
 function uploadFormHtml(selected) {
     return `
         <form id="verifyForm">
@@ -477,7 +516,7 @@ function uploadFormHtml(selected) {
             <button type="submit">Submit for review</button>
         </form>`;
 }
-
+ 
 function wireUploadForm(user) {
     const form = document.getElementById("verifyForm");
     if (!form) return;
@@ -506,7 +545,7 @@ function wireUploadForm(user) {
         }
     });
 }
-
+ 
 async function renderVerification(user) {
     let v = null;
     try {
@@ -517,12 +556,12 @@ async function renderVerification(user) {
         verifyCard.innerHTML = "<h3>Could not check your verification</h3><p>Please refresh the page. If this keeps happening, the Firestore rules may not be published yet.</p>";
         return;
     }
-
+ 
     let failedUpload = "";
     try {
         failedUpload = sessionStorage.getItem("dormlyVerifyUploadFailed") || "";
     } catch (e) { /* ignore */ }
-
+ 
     if (!v) {
         verifyCard.className = "v-card needs";
         verifyCard.innerHTML = `
@@ -533,9 +572,9 @@ async function renderVerification(user) {
         wireUploadForm(user);
         return;
     }
-
+ 
     try { sessionStorage.removeItem("dormlyVerifyUploadFailed"); } catch (e) { /* ignore */ }
-
+ 
     if (v.status === "approved") {
         verifyCard.className = "v-card approved";
         verifyCard.innerHTML = `<h3>✓ Verified landlord</h3><p>Your accreditation (${esc(accreditorLabel(v.accreditor))}) has been approved. Properties you add now go live straight away.</p>`;
@@ -552,7 +591,7 @@ async function renderVerification(user) {
         verifyCard.innerHTML = `<h3>Verification under review</h3><p>We have received your ID and accreditation letter (${esc(accreditorLabel(v.accreditor))}). You can already add properties: they are saved as private drafts and go live automatically when an administrator approves your documents.</p>`;
     }
 }
-
+ 
 onAuthStateChanged(auth, async (user) => {
     if (!user) return;
     try {
