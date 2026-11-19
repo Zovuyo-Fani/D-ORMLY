@@ -37,29 +37,29 @@
 </head>
 <body data-require="any">
 <div id="guard-notice">Loading your account...</div>
-
+ 
 <nav>
-
+ 
 <div class="logo">
 <svg width="30" height="30" viewBox="0 0 100 100" fill="none" aria-hidden="true"><path d="M50 8 L92 28 L50 48 L8 28 Z" fill="#0F2A5C"/><path d="M50 48 L92 28 V50 L50 70 L8 50 V28 Z" fill="#0F2A5C" opacity="0.85"/><circle cx="50" cy="76" r="9" fill="#1E9B4F"/><path d="M50 76 L50 90" stroke="#1E9B4F" stroke-width="5" stroke-linecap="round"/></svg> Dorm<span>ly</span>
 </div>
-
+ 
 <ul>
-
+ 
 <li><a href="index.html">Home</a></li>
 <li><a href="listings.html">Listings</a></li>
 <li><a href="admin.html">Admin</a></li>
 <li><a href="#" onclick="logout()">Logout</a></li>
-
+ 
 </ul>
-
+ 
 </nav>
-
+ 
 <section class="header">
 <h1>Landlord verification</h1>
 <p>Review each landlord's ID and accreditation letter before they can list properties.</p>
 </section>
-
+ 
 <div class="wrap">
 <div class="tabs" id="tabs">
 <button class="tab on" data-status="pending">Pending</button>
@@ -69,22 +69,22 @@
 </div>
 <div id="list"><p class="note">Loading...</p></div>
 </div>
-
+ 
 <footer>
-
+ 
 <h2>Dormly</h2>
-
+ 
 <br>
-
+ 
 <p>Safe • Affordable • Verified Student Accommodation</p>
-
+ 
 <br>
-
+ 
 <p>© 2026 Dormly. All Rights Reserved.</p>
-
+ 
 <p style="margin-top:10px"><a href="privacy.html">Privacy Policy</a></p>
 </footer>
-
+ 
 <script type="module">
 // Admin access is decided by firestore.rules: only a user whose ID exists in the
 // "admins" collection can read other landlords' verification records. Anyone else
@@ -98,23 +98,23 @@ import { getStorage, ref, getDownloadURL }
     from "https://www.gstatic.com/firebasejs/12.16.0/firebase-storage.js";
 import { accreditorLabel } from "./js/verification.js";
 import { money } from "./js/pricing.js";
-
+ 
 const list = document.getElementById("list");
 const tabs = document.querySelectorAll(".tab");
 const storage = getStorage(getApp());
 let me = null;
 let current = "pending";
-
+ 
 function esc(value) {
     const div = document.createElement("div");
     div.textContent = value == null ? "" : String(value);
     return div.innerHTML;
 }
-
+ 
 function when(ts) {
     try { return ts && ts.toDate ? ts.toDate().toLocaleString() : ""; } catch (e) { return ""; }
 }
-
+ 
 async function openDoc(path) {
     // Open the tab straight away (a popup blocker allows this inside a click), then point it at the file.
     const tab = window.open("", "_blank");
@@ -127,14 +127,14 @@ async function openDoc(path) {
         alert("Could not open the file: " + (error.code || error.message));
     }
 }
-
+ 
 async function getDrafts(landlordId) {
     const snap = await getDocs(query(collection(db, "propertyDrafts"), where("ownerId", "==", landlordId)));
     const drafts = [];
     snap.forEach((d) => drafts.push({ id: d.id, data: d.data() }));
     return drafts;
 }
-
+ 
 async function decide(item, status, reason, card) {
     const buttons = card.querySelectorAll("button");
     buttons.forEach((b) => { b.disabled = true; });
@@ -163,7 +163,7 @@ async function decide(item, status, reason, card) {
         alert("Could not save the decision: " + (error.code || error.message));
     }
 }
-
+ 
 function render(items) {
     if (!items.length) {
         list.innerHTML = '<p class="note">Nothing here.</p>';
@@ -194,10 +194,10 @@ function render(items) {
                 <textarea class="reason" rows="2" maxlength="300" placeholder="Tell the landlord what to fix (they will see this), e.g. 'Letter has expired' or 'ID photo is unreadable'"></textarea>
                 <div class="row"><button class="btn no" data-act="confirm-reject">Confirm rejection</button></div>
             </div>`;
-
+ 
         card.querySelector('[data-open="id"]').addEventListener("click", () => openDoc(v.idDocPath));
         card.querySelector('[data-open="letter"]').addEventListener("click", () => openDoc(v.letterPath));
-
+ 
         let draftCount = 0;
         const countEl = card.querySelector(".draftcount");
         if (countEl) getDrafts(v.id).then((d) => {
@@ -206,7 +206,7 @@ function render(items) {
                 ? d.length + " draft listing" + (d.length === 1 ? "" : "s") + " will go live when you approve"
                 : "No draft listings yet";
         }).catch(() => { countEl.textContent = ""; });
-
+ 
         const approve = card.querySelector('[data-act="approve"]');
         if (approve) approve.addEventListener("click", () => {
             const extra = draftCount ? " Their " + draftCount + " draft listing" + (draftCount === 1 ? "" : "s") + " will go live immediately." : "";
@@ -214,21 +214,21 @@ function render(items) {
                 decide(v, "approved", "", card);
             }
         });
-
+ 
         const reject = card.querySelector('[data-act="reject"]');
         const box = card.querySelector(".reject-box");
         if (reject) reject.addEventListener("click", () => { box.style.display = "block"; box.querySelector("textarea").focus(); });
-
+ 
         card.querySelector('[data-act="confirm-reject"]').addEventListener("click", () => {
             const reason = box.querySelector("textarea").value.trim();
             if (!reason) { alert("Please tell the landlord why, so they know what to fix."); return; }
             decide(v, "rejected", reason, card);
         });
-
+ 
         list.appendChild(card);
     });
 }
-
+ 
 // ---------- payments: confirm a student's proof of payment ----------
 async function decidePayment(b, submission, confirmed, reason, card) {
     const buttons = card.querySelectorAll("button");
@@ -241,6 +241,14 @@ async function decidePayment(b, submission, confirmed, reason, card) {
             reviewedAt: serverTimestamp(),
             updatedAt: serverTimestamp()
         });
+        if (confirmed && b.propertyId) {
+            const ps = await getDoc(doc(db, "properties", b.propertyId));
+            if (ps.exists()) {
+                const p = ps.data(), tot = Number(p.rooms) || 0;
+                const occ = tot ? Math.min(tot, (Number(p.roomsOccupied) || 0) + 1) : (Number(p.roomsOccupied) || 0) + 1;
+                batch.update(ps.ref, { roomsOccupied: occ, status: tot && occ >= tot ? "Occupied" : (p.status || "Available") });
+            }
+        }
         if (submission) {
             batch.update(doc(db, "paymentSubmissions", b.paymentSubmissionId), {
                 status: confirmed ? "approved" : "rejected",
@@ -257,23 +265,23 @@ async function decidePayment(b, submission, confirmed, reason, card) {
         alert("Could not save the decision: " + (error.code || error.message));
     }
 }
-
+ 
 async function loadPayments() {
     const snap = await getDocs(query(collection(db, "bookings"), where("status", "==", "payment_submitted")));
     const items = [];
     snap.forEach((d) => items.push({ id: d.id, ...d.data() }));
     items.sort((a, b) => (a.updatedAt && b.updatedAt ? a.updatedAt.toMillis() - b.updatedAt.toMillis() : 0));
-
+ 
     if (!items.length) { list.innerHTML = '<p class="note">No payments waiting to be checked.</p>'; return; }
     list.innerHTML = "";
-
+ 
     for (const b of items) {
         let submission = null;
         try {
             const s = await getDoc(doc(db, "paymentSubmissions", b.paymentSubmissionId));
             if (s.exists()) submission = s.data();
         } catch (e) { console.error(e); }
-
+ 
         const card = document.createElement("div");
         card.className = "req";
         card.innerHTML = `
@@ -310,7 +318,7 @@ async function loadPayments() {
         list.appendChild(card);
     }
 }
-
+ 
 async function load(status) {
     current = status;
     tabs.forEach((t) => t.classList.toggle("on", t.dataset.status === status));
@@ -329,9 +337,9 @@ async function load(status) {
             : '<div class="err">Could not load the requests: ' + esc(error.message) + '</div>';
     }
 }
-
+ 
 tabs.forEach((t) => t.addEventListener("click", () => load(t.dataset.status)));
-
+ 
 onAuthStateChanged(auth, (user) => {
     if (!user) return;
     me = user;
@@ -341,3 +349,4 @@ onAuthStateChanged(auth, (user) => {
 <script type="module" src="js/guard.js"></script>
 </body>
 </html>
+ 
